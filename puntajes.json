@@ -178,5 +178,33 @@
     {
         "nick": "\u00bf\u00bf\u00bf\u00bf",
         "puntaje": 1
+    },
+    {
+        "nick": "pepe",
+        "puntaje": 4
+    },
+    {
+        "nick": "raul",
+        "puntaje": 11
+    },
+    {
+        "nick": "keke",
+        "puntaje": 3
+    },
+    {
+        "nick": "pepe",
+        "puntaje": 2
+    },
+    {
+        "nick": "\u00f1\u00f1\u00f1",
+        "puntaje": 1
+    },
+    {
+        "nick": "",
+        "puntaje": 0
+    },
+    {
+        "nick": "pppp",
+        "puntaje": 0
     }
 ]

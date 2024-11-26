@@ -303,7 +303,10 @@ def descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas):
     celdas_por_descubrir = [(fila, columna)]
 
     while celdas_por_descubrir:
-        f, c = celdas_por_descubrir.pop()
+        #f, c = celdas_por_descubrir.pop()
+        celda = celdas_por_descubrir.pop()
+        f = celda[0]
+        c = celda[1] # Eliminar elemento en el indice especificado y lo retorna
 
         # Si la celda ya ha sido descubierta, saltarla
         if descubiertas[f][c]:
@@ -583,7 +586,8 @@ def reiniciar(filas, columnas, num_minas):
     descubiertas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las casillas descubiertas
     banderas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las banderas
     puntaje = 0
-    return matriz, descubiertas, banderas, puntaje
+    contador_segundos = 0
+    return matriz, descubiertas, banderas, puntaje, contador_segundos
 
 def guardar_puntaje(nick, puntaje, archivo="puntajes.json"):
     datos = []

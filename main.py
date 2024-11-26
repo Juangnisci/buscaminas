@@ -100,9 +100,12 @@ while ejecutando:
                         banderas[fila][columna] = not banderas[fila][columna]
                         if verificar_victoria(matriz, banderas):
                             fin_juego = True
-                    
+                    if fin_juego:
+                        nick = pedir_nick()
+                        guardar_puntaje(nick, puntaje)    
                 elif boton_reiniciar.collidepoint(event.pos):
-                    matriz, descubiertas, banderas, puntaje = reiniciar(filas, columnas, num_minas)
+                    matriz, descubiertas, banderas, puntaje, contador_segundos = reiniciar(filas, columnas, num_minas) #Desepaquetamiento de variables
+                    
                 
             if event.type == evento_contador:
                 contador_segundos += 1
@@ -122,9 +125,7 @@ while ejecutando:
         
         pygame.display.flip()
         
-        if fin_juego:
-                nick = pedir_nick()
-                guardar_puntaje(nick, puntaje)
+        
 
     # Fin de juego y volver al menú
     pygame.time.wait(2000)
