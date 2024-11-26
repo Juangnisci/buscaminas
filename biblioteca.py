@@ -1,4 +1,4 @@
-import pygame, random, sys, json
+import pygame, random, sys, json, os
 # Constantes
 
 pygame.init()
@@ -9,7 +9,9 @@ ALTO = 800
 BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
 NOMBRE_FUENTE = pygame.font.SysFont("Pixeled.ttf", 20, bold=True)
-ARCHIVO_PUNTAJES = "puntajesbuscamina.json"
+ARCHIVO_PUNTAJES = "puntajes.json"
+reloj = pygame.time.Clock()
+
 
 # Colores
 COLOR_BOTON = (0, 200, 0)
@@ -583,8 +585,213 @@ def reiniciar(filas, columnas, num_minas):
     puntaje = 0
     return matriz, descubiertas, banderas, puntaje
 
+def guardar_puntaje(nick, puntaje, archivo="puntajes.json"):
+    datos = []
+
+    # Verificar si el archivo existe abriéndolo directamente
+    archivo_existe = False
+    with open(archivo, "a+") as file:
+        file.seek(0)  # Mover al inicio del archivo
+        contenido = file.read()
+        if contenido:  # Si tiene contenido, se considera que existe
+            archivo_existe = True
+
+    if archivo_existe:
+        # Leer datos existentes
+        with open(archivo, "r") as file:
+            datos = json.load(file)
+
+    # Agregar el nuevo puntaje
+    datos.append({"nick": nick, "puntaje": puntaje})
+
+    # Guardar los datos actualizados en el archivo JSON
+    with open(archivo, "w") as file:
+        json.dump(datos, file, indent=4)
+
+# Pantalla para pedir el nombre (nick)
+def pedir_nick():
+    nick = ""
+    ingresando = True
+    while ingresando:
+        for evento in pygame.event.get():
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_RETURN:  # Confirmar con Enter
+                    ingresando = False
+                elif evento.key == pygame.K_BACKSPACE:  # Borrar un carácter
+                    nick = nick[:-1]
+                else:
+                    nick += evento.unicode  # Agregar el carácter ingresado
+
+        # Dibujar pantalla de entrada
+        pantalla.blit(imagen_fondo, (0, 0))
+        texto = fuente.render("Ingresa tu Nick (Enter para confirmar):", True, ("white"))
+        texto_nick = fuente.render(nick, True, ("white"))
+        rect_x = ANCHO // 2 - texto.get_width() // 2 - 10
+        rect_y = ALTO // 3 - 10
+        rect_ancho = texto.get_width() + 20
+        rect_alto = texto.get_height() + 200
+
+        # Dibujar el rectángulo debajo del texto (color gris)
+        pygame.draw.rect(pantalla, ("black"), (rect_x, rect_y, rect_ancho, rect_alto))
+        pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 3))
+        pantalla.blit(texto_nick, (ANCHO // 2 - texto_nick.get_width() // 2, ALTO // 2))
+        pygame.display.flip()
+
+    return nick
+
+def swap(lista: list, indice_uno: int, indice_dos: int) -> list:
+    """
+    Swapea los valores de dos índices de una lista.
+
+    Args:
+        lista (list): Lista que contiene los valores a intercambiar.
+        indice_uno (int): Índice del valor a intercambiar.
+        indice_dos (int): Índice del segundo valor a intercambiar.
+
+    Returns:
+        list: Retorna la lista con los valores intercambiados.
+    """
+    auxiliar = lista[indice_uno]
+    lista[indice_uno] = lista[indice_dos]
+    lista[indice_dos] = auxiliar
+
+    return lista  
 
 
+def ordenar(lista: list, clave: str, ascendente: bool = True) -> list: 
+    """
+    Ordena una lista de diccionarios en base a una clave de forma ascendente o descendente.
+
+    Args:
+        lista (list): Lista de diccionarios a ordenar.
+        clave (str): Clave a usar para ordenar la lista.
+        ascendente (bool, opcional): Declara si la lista se ordena de forma ascendente o descendente. 
+                                     Se le asigna False para ordenar de forma descendente. 
+                                     (Si no se pasa ningún valor booleano, ordena de forma ascendente por defecto.)
+
+    Returns:
+        list: Retorna la lista de diccionarios ordenada.
+    """
+    for i in range(len(lista) - 1):
+        for j in range(i + 1, len(lista)):
+            if ascendente and int(lista[i][clave]) > int(lista[j][clave]) or not ascendente and int(lista[i][clave]) < int(lista[j][clave]):
+                swap(lista, i, j)
+    return lista
+
+def generar_json(nombre: str, lista: list, clave: str):
+    """
+    Genera un archivo JSON con la lista proporcionada bajo la clave dada.
+
+    Args:
+        nombre (str): El nombre del archivo JSON a generar.
+        lista (list): La lista de datos a guardar en el archivo JSON.
+        clave (str): La clave bajo la cual se guardará la lista en el archivo JSON.
+    """
+    data = {clave: lista}
+    with open(nombre, 'w') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
+
+def leer_archivo(archivo_nombre):
+    """
+    Lee el contenido de un archivo JSON. Si el archivo no existe, devuelve un diccionario vacío.
+
+    Args:
+        archivo_nombre (str): Ruta del archivo JSON.
+
+    Returns:
+        dict: Contenido del archivo JSON como un diccionario. Si no existe, retorna un diccionario vacío.
+    """
+    try:
+        with open(archivo_nombre, 'r') as archivo:
+            contenido = json.load(archivo)
+    except FileNotFoundError:
+        contenido = {}  # Devuelve un diccionario vacío si el archivo no existe
+
+    return contenido
+    
+def guardar_puntajes(nuevo_puntaje, archivo_puntajes):
+    """
+    Agrega un nuevo puntaje al archivo JSON.
+
+    Args:
+        nuevo_puntaje (dict): Diccionario con las claves "apodo" y "puntos" que representa el puntaje.
+        archivo_puntajes (str): Ruta del archivo JSON donde se guardan los puntajes.
+    """
+    datos = leer_archivo(archivo_puntajes)
+    puntajes = datos.get("puntajes", [])  # Obtiene la lista de puntajes o la inicializa vacía
+
+    puntajes.append(nuevo_puntaje)
+    puntajes = ordenar(puntajes, clave='puntos', ascendente=False)  # Ordena los puntajes
+
+    generar_json(archivo_puntajes, puntajes, "puntajes")
+
+def cargar_puntajes(archivo_puntajes):
+    """
+    Carga las puntuaciones más altas desde un archivo JSON.
+
+    Args:
+        archivo_puntajes (str): Ruta del archivo JSON que contiene los puntajes.
+
+    Returns:
+        list: Lista de diccionarios que representan las puntuaciones más altas.
+    """
+    # Paso 1: Leer el archivo usando leer_archivo
+    datos = leer_archivo(archivo_puntajes)
+    
+    # Paso 2: Validar si el archivo fue leído correctamente
+    if datos is None:
+        print(f"Advertencia: El archivo '{archivo_puntajes}' no pudo ser leído.")
+        return []
+    
+    # Paso 3: Validar el tipo de los datos cargados
+    if isinstance(datos, dict):
+        # Si es un diccionario, busca la clave "puntajes"
+        return datos.get("puntajes", [])
+    elif isinstance(datos, list):
+        # Si ya es una lista, retorna directamente
+        return datos
+    
+    # Paso 4: Caso de formato inesperado
+    print(f"Advertencia: El archivo '{archivo_puntajes}' tiene un formato inesperado.")
+    return []
+
+def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, alto):
+    """
+    Muestra la clasificación de los 5 mejores puntajes en la pantalla.
+
+    Args:
+        pantalla (pygame.Surface): Superficie de Pygame donde se dibujará el ranking.
+        archivo_puntajes (str): Ruta al archivo JSON que contiene los puntajes.
+        imagen_fondo (pygame.Surface): Imagen de fondo para el ranking.
+        ancho (int): Ancho de la pantalla.
+        alto (int): Alto de la pantalla.
+
+    Returns:
+        str: "menu_principal" si el usuario hace clic en el botón "Atrás".
+    """
+    puntajes = cargar_puntajes(archivo_puntajes)
+    puntajes = ordenar(puntajes, clave='puntaje', ascendente=False)[:5]  # Top 5 puntajes
+
+    pantalla.blit(imagen_fondo, (0, 0))
+    dibujar_texto(pantalla, "TOP 5", 48, ancho / 2, 20)
+    desplazamiento_y = 150
+    for clave in puntajes:
+        dibujar_texto(pantalla, f"{clave['nick']}: {clave['puntaje']}", 36, ancho / 2, desplazamiento_y)
+        desplazamiento_y += 50
+
+    dibujar_boton("Volver", 50, 50, 120, 50, (50, 50, 255), (100, 100, 255), None)
+
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos_raton = pygame.mouse.get_pos()
+                if 50 < pos_raton[0] < 170 and 50 < pos_raton[1] < 100:
+                    return "menu_principal"
 
 
 

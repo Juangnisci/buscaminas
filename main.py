@@ -54,6 +54,9 @@ while ejecutando:
                 # Botón Jugar
                 elif boton_presionado("Jugar", event.pos):
                     en_menu = False  # Salir del menú y entrar al juego
+                elif boton_presionado("Ver Puntajes", event.pos):
+                    resultado = mostrar_ranking(pantalla, ARCHIVO_PUNTAJES, imagen_fondo, ANCHO, ALTO)
+
                 # Botón Salir
                 elif boton_presionado("Salir", event.pos):
                     pygame.quit()
@@ -96,15 +99,16 @@ while ejecutando:
                         banderas[fila][columna] = not banderas[fila][columna]
                 elif boton_reiniciar.collidepoint(event.pos):
                     matriz, descubiertas, banderas, puntaje = reiniciar(filas, columnas, num_minas)
-                if event.type == evento_contador:
-                    contador_segundos += 1
+            if event.type == evento_contador:
+                contador_segundos += 1
 
                 minutos = contador_segundos // 60
                 segundos = contador_segundos % 60
-
                 contador_texto = fuente.render(f"Time: {minutos}:{segundos:02d}", True, "red")
             
-            
+            if fin_juego:
+                nick = pedir_nick()
+                guardar_puntaje(nick, puntaje)
             
 
         # Dibujar el tablero y los indicadores
