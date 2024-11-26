@@ -1,4 +1,4 @@
-import pygame, random, sys, json, os
+import pygame, random, sys, json
 # Constantes
 
 pygame.init()
