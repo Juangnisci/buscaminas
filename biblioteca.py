@@ -37,7 +37,7 @@ tamano_icono = 50
 posicion_icono = (ANCHO - tamano_icono - 10, 10)  # Esquina superior derecha
 
 # Cargar imagen de fondo
-imagen_fondo = pygame.image.load('fondo4.jpg')
+imagen_fondo = pygame.image.load('fondo_buscaminas.jpeg')
 imagen_fondo = pygame.transform.scale(imagen_fondo, (ANCHO, ALTO))
 
 # Fuentes
@@ -614,30 +614,39 @@ def pedir_nick():
     ingresando = True
     while ingresando:
         for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:  # Permitir salir del juego
+                pygame.quit()
+                exit()
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_RETURN:  # Confirmar con Enter
                     ingresando = False
                 elif evento.key == pygame.K_BACKSPACE:  # Borrar un carácter
                     nick = nick[:-1]
                 else:
-                    nick += evento.unicode  # Agregar el carácter ingresado
+                    # Agregar el carácter ingresado, si es imprimible
+                    if len(evento.unicode) == 1 and evento.unicode.isprintable():
+                        nick += evento.unicode
 
         # Dibujar pantalla de entrada
-        pantalla.blit(imagen_fondo, (0, 0))
-        texto = fuente.render("Ingresa tu Nick (Enter para confirmar):", True, ("white"))
-        texto_nick = fuente.render(nick, True, ("white"))
+        pantalla.blit(imagen_fondo, (0, 0))  # Fondo
+        texto = fuente.render("Ingresa tu Nick (Enter para confirmar):", True, "white")
+        texto_nick = fuente.render(nick, True, "white")
+
+        # Rectángulo de contraste
         rect_x = ANCHO // 2 - texto.get_width() // 2 - 10
         rect_y = ALTO // 3 - 10
         rect_ancho = texto.get_width() + 20
         rect_alto = texto.get_height() + 200
+        pygame.draw.rect(pantalla, "black", (rect_x, rect_y, rect_ancho, rect_alto))
 
-        # Dibujar el rectángulo debajo del texto (color gris)
-        pygame.draw.rect(pantalla, ("black"), (rect_x, rect_y, rect_ancho, rect_alto))
+        # Dibujar el texto encima del rectángulo
         pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 3))
         pantalla.blit(texto_nick, (ANCHO // 2 - texto_nick.get_width() // 2, ALTO // 2))
+
         pygame.display.flip()
 
     return nick
+
 
 def swap(lista: list, indice_uno: int, indice_dos: int) -> list:
     """
@@ -772,8 +781,11 @@ def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, alto):
     puntajes = cargar_puntajes(archivo_puntajes)
     puntajes = ordenar(puntajes, clave='puntaje', ascendente=False)[:5]  # Top 5 puntajes
 
+    
+
     pantalla.blit(imagen_fondo, (0, 0))
-    dibujar_texto(pantalla, "TOP 5", 48, ancho / 2, 20)
+    texto_puntajes = fuente.render("TOP 5", True, "white")
+    pantalla.blit(texto_puntajes, (ancho // 2 - texto_puntajes.get_width() // 2, 100))
     desplazamiento_y = 150
     for clave in puntajes:
         dibujar_texto(pantalla, f"{clave['nick']}: {clave['puntaje']}", 36, ancho / 2, desplazamiento_y)
@@ -793,6 +805,14 @@ def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, alto):
                 if 50 < pos_raton[0] < 170 and 50 < pos_raton[1] < 100:
                     return "menu_principal"
 
-
+def verificar_victoria(matriz, banderas):
+    for fila in range(len(matriz)):
+        for columna in range(len(matriz[0])):
+            if matriz[fila][columna] == -1:  # Es una mina
+                if not banderas[fila][columna]:  # Falta una bandera
+                    return False
+            elif banderas[fila][columna]:  # Bandera mal colocada
+                return False
+    return True
 
 

@@ -95,10 +95,15 @@ while ejecutando:
                         resultado = manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, descubiertas, puntaje, SONIDO_FIN_JUEGO, SONIDO_CELDA_DESCUBIERTA)
                         puntaje = resultado["puntaje"]
                         fin_juego = resultado["fin_juego"]
+                        
                     elif event.button == 3:  # Clic derecho
                         banderas[fila][columna] = not banderas[fila][columna]
+                        if verificar_victoria(matriz, banderas):
+                            fin_juego = True
+                    
                 elif boton_reiniciar.collidepoint(event.pos):
                     matriz, descubiertas, banderas, puntaje = reiniciar(filas, columnas, num_minas)
+                
             if event.type == evento_contador:
                 contador_segundos += 1
 
@@ -106,9 +111,6 @@ while ejecutando:
                 segundos = contador_segundos % 60
                 contador_texto = fuente.render(f"Time: {minutos}:{segundos:02d}", True, "red")
             
-            if fin_juego:
-                nick = pedir_nick()
-                guardar_puntaje(nick, puntaje)
             
 
         # Dibujar el tablero y los indicadores
@@ -119,6 +121,10 @@ while ejecutando:
         boton_reiniciar = dibujar_boton("Reiniciar", ANCHO / 2 - ANCHO_BOTON / 2, 20, ANCHO_BOTON, ALTO_BOTON, NEGRO, (200, 200, 200))
         
         pygame.display.flip()
+        
+        if fin_juego:
+                nick = pedir_nick()
+                guardar_puntaje(nick, puntaje)
 
     # Fin de juego y volver al menú
-    pygame.time.wait(5000)
+    pygame.time.wait(2000)
