@@ -37,6 +37,8 @@ fuente = pygame.font.Font("archivos_extras/VCRosdNEUE.ttf", 35)  # Tamaño de la
 
 # Configurar pantalla
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
+icono_pantalla = pygame.image.load("archivos_extras/flag.png")
+pygame.display.set_icon(icono_pantalla)
 pygame.display.set_caption('BUSCAMINAS')
 
 # Constantes de posición
