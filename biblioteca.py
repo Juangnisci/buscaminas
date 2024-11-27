@@ -87,10 +87,11 @@ def crear_matriz_buscamina(filas:int, columnas:int, num_minas:int) -> list:
         for columna in range(columnas):
             if matriz[fila][columna] == -1:
                 continue
-            for i in range(max(0, fila - 1), min(filas, fila + 2)):
-                for j in range(max(0, columna - 1), min(columnas, columna + 2)):
-                    if matriz[i][j] == -1:
+            for i in range(fila - 1, fila + 2):
+                for j in range(columna - 1, columna + 2):
+                    if 0 <= i < filas and 0 <= j < columnas and matriz[i][j] == -1:
                         matriz[fila][columna] += 1
+            
     return matriz
 
 # Funciones de dibujo
@@ -470,6 +471,7 @@ def manejar_evento(fila:int, columna:int, filas:int, columnas:int, event, matriz
         guardar_puntaje(nick, puntaje)
         pantalla.blit(imagen_fondo, (0, 0))  # Fondo para mostrar la matriz final
         pygame.display.flip()
+        
     
     return resultado
 
