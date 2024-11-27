@@ -266,5 +266,37 @@
     {
         "nick": "5",
         "puntaje": 1
+    },
+    {
+        "nick": "5",
+        "puntaje": 8
+    },
+    {
+        "nick": "4",
+        "puntaje": 1
+    },
+    {
+        "nick": "8",
+        "puntaje": 0
+    },
+    {
+        "nick": "\u00f1}7",
+        "puntaje": 1
+    },
+    {
+        "nick": "4",
+        "puntaje": 1
+    },
+    {
+        "nick": "4",
+        "puntaje": 14
+    },
+    {
+        "nick": "hhhhhhh",
+        "puntaje": 32
+    },
+    {
+        "nick": "l",
+        "puntaje": 1
     }
 ]

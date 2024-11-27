@@ -369,6 +369,7 @@ def descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas):
                 for j in range(c - 1, c + 2):  # Verifica las columnas adyacentes
                     if 0 <= i < filas and 0 <= j < columnas and not descubiertas[i][j]:
                         celdas_por_descubrir.append((i, j))
+    
         
 
 def ajustar_tamano_casilla(filas, columnas):
@@ -426,26 +427,25 @@ def manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, desc
         "fin_juego": False
     }
     
-    if 0 <= fila < filas and 0 <= columna < columnas:
-        if event.button == 1:  # Clic izquierdo
-            if not banderas[fila][columna]:  # No se puede descubrir si hay una bandera
-                if matriz[fila][columna] == -1:  # Si encuentra una mina
-                    for i in range(len(matriz)):
-                        for j in range(len(matriz[0])): # Se recorre toda la matriz para descubrir todas las celdas que contienen minas
-                            if matriz[i][j] == -1:
-                                descubiertas[i][j] = True
-                    SONIDO_FIN_JUEGO.play()
-                    print("¡Boom! Has encontrado una mina. Has perdido la partida.")
+    if event.button == 1:  # Clic izquierdo
+        if not banderas[fila][columna]:  # No se puede descubrir si hay una bandera
+            if matriz[fila][columna] == -1:  # Si encuentra una mina
+                for i in range(len(matriz)):
+                    for j in range(len(matriz[0])): # Se recorre toda la matriz para descubrir todas las celdas que contienen minas
+                        if matriz[i][j] == -1:
+                            descubiertas[i][j] = True
+                SONIDO_FIN_JUEGO.play()
+                print("¡Boom! Has encontrado una mina. Has perdido la partida.")
+                resultado["fin_juego"] = True                    
+            else:
+                if not descubiertas[fila][columna]:
+                    SONIDO_CELDA_DESCUBIERTA.play()
+                    resultado["puntaje"] += 1
+                descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas)
+                if verificar_victoria(matriz, descubiertas, num_minas, cantidad_celdas):
+                    SONIDO_VICTORIA.play()
                     resultado["fin_juego"] = True                    
-                else:
-                    if not descubiertas[fila][columna]:
-                        SONIDO_CELDA_DESCUBIERTA.play()
-                        resultado["puntaje"] += 1
-                    descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas)
-                    if verificar_victoria(matriz, descubiertas, num_minas, cantidad_celdas):
-                        SONIDO_VICTORIA.play()
-                        resultado["fin_juego"] = True                    
-                        
+                    
     if resultado["fin_juego"]:
         nick = pedir_nick()
         guardar_puntaje(nick, puntaje)
@@ -463,8 +463,6 @@ def reiniciar(filas, columnas, num_minas):
     :param num_minas: Número de minas en el tablero
     :return: Tupla con la matriz, el estado de las casillas descubiertas, el estado de las banderas, el puntaje y el contador de segundos
     """
-    
-
     matriz = crear_matriz_buscamina(filas, columnas, num_minas) # Reiniciar la matriz
     descubiertas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las casillas descubiertas
     banderas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las banderas
@@ -573,7 +571,7 @@ def swap(lista: list, indice_uno: int, indice_dos: int) -> list:
     lista[indice_dos] = auxiliar
     return lista  
 
-def ordenar(lista: list, clave: str, ascendente: bool = True) -> list: 
+def ordenar(lista: list, clave: str) -> list: 
     """
     Ordena una lista de diccionarios en base a una clave de forma ascendente o descendente.
 
@@ -589,7 +587,8 @@ def ordenar(lista: list, clave: str, ascendente: bool = True) -> list:
     """
     for i in range(len(lista) - 1):
         for j in range(i + 1, len(lista)):
-            if ascendente and int(lista[i][clave]) > int(lista[j][clave]) or not ascendente and int(lista[i][clave]) < int(lista[j][clave]):
+            # Cambié la condición para orden descendente
+            if int(lista[i][clave]) < int(lista[j][clave]):
                 swap(lista, i, j)
     return lista
 
@@ -636,7 +635,7 @@ def guardar_puntajes(nuevo_puntaje, archivo_puntajes):
     puntajes = datos.get("puntajes", [])  # Obtiene la lista de puntajes o la inicializa vacía
 
     puntajes.append(nuevo_puntaje)
-    puntajes = ordenar(puntajes, clave='puntos', ascendente=False)  # Ordena los puntajes
+    puntajes = ordenar(puntajes, clave='puntos')  # Ordena los puntajes
     generar_json(archivo_puntajes, puntajes, "puntajes")
 
 def cargar_puntajes(archivo_puntajes):
@@ -649,25 +648,24 @@ def cargar_puntajes(archivo_puntajes):
     Returns:
         list: Lista de diccionarios que representan las puntuaciones más altas.
     """
-    # Leer el archivo usando leer_archivo
     datos = leer_archivo(archivo_puntajes)
-    
+    puntajes = []
+
     # Validar si el archivo fue leído correctamente
     if datos is None:
         print(f"Advertencia: El archivo '{archivo_puntajes}' no pudo ser leído.")
-        return []
+    else:
+        # Validar el tipo de los datos cargados
+        if type(datos) == dict:
+            puntajes = datos.get("puntajes", [])
+        elif type(datos) == list:
+            puntajes = datos
+        else:
+            # Caso de formato inesperado
+            print(f"Advertencia: El archivo '{archivo_puntajes}' tiene un formato inesperado.")
     
-    # Validar el tipo de los datos cargados
-    if isinstance(datos, dict):
-        # Si es un diccionario, busca la clave "puntajes"
-        return datos.get("puntajes", [])
-    elif isinstance(datos, list):
-        # Si ya es una lista, retorna directamente
-        return datos
-    
-    # Caso de formato inesperado
-    print(f"Advertencia: El archivo '{archivo_puntajes}' tiene un formato inesperado.")
-    return []
+    # Retornar los puntajes (que puede ser una lista vacía en caso de error)
+    return puntajes
 
 def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, en_menu):
     """
@@ -685,7 +683,7 @@ def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, en_menu):
     """
     en_menu = False
     puntajes = cargar_puntajes(archivo_puntajes)
-    puntajes = ordenar(puntajes, clave='puntaje', ascendente=False)[:5]  # Top 5 puntajes
+    puntajes = ordenar(puntajes, clave='puntaje')[:5]  # Top 5 puntajes
     pantalla.blit(imagen_fondo, (0, 0))
     
     texto_puntajes = fuente.render("TOP 5", True, "white")
