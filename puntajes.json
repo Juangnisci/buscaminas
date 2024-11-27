@@ -298,5 +298,9 @@
     {
         "nick": "l",
         "puntaje": 1
+    },
+    {
+        "nick": "a",
+        "puntaje": 2
     }
 ]

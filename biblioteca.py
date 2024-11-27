@@ -92,7 +92,7 @@ def crear_matriz_buscamina(filas:int, columnas:int, num_minas:int) -> list:
     return matriz
 
 # Funciones de dibujo
-def dibujar_texto(surf, texto, tamano, x, y): 
+def dibujar_texto(surf, texto:str, tamano:int, x:int, y:int) -> None: 
     """
         Una función que representa texto en una superficie en una posición y alineación específicas.
 
@@ -112,7 +112,7 @@ def dibujar_texto(surf, texto, tamano, x, y):
     rectangulo_texto.midtop = (x, y) # El rectángulo se centra en la superficie, .midtop representa el punto medio superior del rectángulo 
     surf.blit(superficie_texto, rectangulo_texto) # Rellena el rectángulo con el texto
 
-def dibujar_boton(pantalla, texto, x, y, ancho, alto, color_inactivo, color_activo):
+def dibujar_boton(pantalla, texto:str, x:int, y:int, ancho:int, alto:int, color_inactivo:tuple, color_activo:tuple):
     """
     Dibuja un botón en la pantalla con el texto proporcionado.
 
@@ -142,7 +142,7 @@ def dibujar_boton(pantalla, texto, x, y, ancho, alto, color_inactivo, color_acti
     return rect_boton  # Retornar el rectángulo del botón
 
 #Configuracion de niveles
-def seleccionar_nivel():
+def seleccionar_nivel() -> tuple:
     """
     Presenta una pantalla para seleccionar el nivel de dificultad y devuelve una tupla con
     el número de filas, columnas y minas que se utilizarán en el juego.
@@ -164,15 +164,16 @@ def seleccionar_nivel():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:  # Detecta clic inicial
-                if boton_facil.collidepoint(event.pos):
-                    resultado = (8, 8, 10)  # Fácil: 8x8 con 10 minas
-                    nivel_seleccionado = True
-                elif boton_medio.collidepoint(event.pos):
-                    resultado = (16, 16, 40)  # Medio: 16x16 con 40 minas
-                    nivel_seleccionado = True
-                elif boton_dificil.collidepoint(event.pos):
-                    resultado = (16, 30, 100)  # Difícil: 16x30 con 100 minas
-                    nivel_seleccionado = True
+                if event.button == 1:
+                    if boton_facil.collidepoint(event.pos):
+                        resultado = (8, 8, 10)  # Fácil: 8x8 con 10 minas
+                        nivel_seleccionado = True        
+                    elif boton_medio.collidepoint(event.pos):
+                        resultado = (16, 16, 40)  # Medio: 16x16 con 40 minas
+                        nivel_seleccionado = True
+                    elif boton_dificil.collidepoint(event.pos):
+                        resultado = (16, 30, 100)  # Difícil: 16x30 con 100 minas
+                        nivel_seleccionado = True
                 
         pygame.display.flip()
     
@@ -180,14 +181,14 @@ def seleccionar_nivel():
     return resultado
          
 #configuracion de sonido
-def alternar_sonido(silencio, sonido_fondo):
+def alternar_sonido(silencio:bool, sonido_fondo) -> bool:
     """
     Alterna el estado de silencio del sonido de fondo. Si el sonido estaba
     encendido, lo apaga y viceversa.
 
     Parametros:
-        silencio (bool): Estado actual del sonido (True: apagado, False: encendido)
-        sonido_fondo (pygame.mixer.Sound): Sonido de fondo
+        silencio: Estado actual del sonido (True: apagado, False: encendido)
+        sonido_fondo: Sonido de fondo
 
     Return:
         bool: Nuevo estado del sonido (True: apagado, False: encendido)
@@ -229,7 +230,21 @@ def cargar_imagenes():
     imagen_vacia = pygame.image.load("archivos_extras/empty-block.png")
     return imagenes_numeros, imagen_mina, imagen_mina_explotada, imagen_bandera_mina, imagen_vacia,
 
-def dibujar_celda(pantalla, x, y, tam_casilla, tipo, imagenes, numero=None):
+def dibujar_celda(pantalla, x:int, y:int, tam_casilla:int, tipo:str, imagenes:list, numero:int=None):
+    """
+    Dibuja una celda en la pantalla dada en las coordenadas especificadas con un tipo y tamaño específicos.
+
+    Parámetros:
+        pantalla: La superficie sobre la cual se dibuja la celda.
+        x: La coordenada x de la esquina superior izquierda de la celda.
+        y: La coordenada y de la esquina superior izquierda de la celda.
+        tam_casilla: El tamaño de la celda.
+        tipo: El tipo de celda a dibujar ('mina_explotada', 'mina', 'bandera', 'numero', 'vacia', 'oculta').
+        imagenes: Una lista de imágenes usadas para los diferentes tipos de celdas.
+        numero: El número a mostrar si el tipo de celda es 'numero'.
+
+    La función escala y dibuja la imagen apropiada en la pantalla según el tipo de celda.
+    """
     imagenes_numeros = imagenes[0]
     imagen_mina = imagenes[1]
     imagen_mina_explotada = imagenes[2]
@@ -258,23 +273,21 @@ def dibujar_celda(pantalla, x, y, tam_casilla, tipo, imagenes, numero=None):
         imagen_vacia_redimensionada = pygame.transform.scale(imagen_vacia, (tam_casilla, tam_casilla))
         pantalla.blit(imagen_vacia_redimensionada, (x, y))
 
-def cargar_imagenes_celdas(pantalla, fila, columna, x, y, tam_casilla, matriz, banderas, descubiertas, imagenes): 
+def cargar_imagenes_celdas(pantalla, fila:int, columna:int, x:int, y:int, tam_casilla:int, matriz:list, banderas:list, descubiertas:list, imagenes:list) -> None: 
     """
-Maneja la representación de una sola celda en el juego Buscaminas.
+    Carga y dibuja las imágenes correspondientes en la pantalla para una celda específica.
 
-    Esta función determina la representación visual de una celda en el tablero de juego en función de su estado actual. 
-    Dibuja la imagen apropiada para la celda, ya sea que esté descubierta, cubierta o marcada con una bandera.
-
-    :param pantalla: Superficie sobre la que dibujar.
-    :param fila: Índice de fila de la celda.
-    :param columna: Índice de columna de la celda.
-    :param x: posición de la coordenada X para dibujar la celda.
-    :param y: posición de la coordenada Y para dibujar la celda.
-    :param tam_casilla: Tamaño de la celda.
-    :param matriz: Matriz del juego que contiene los valores de las celdas.
-    :param banderas: Matriz que indica las celdas marcadas.
-    :param descubiertos: Matriz que indica células descubiertas.
-    :param imagenes: Tupla que contiene imágenes para diferentes estados de la celda.
+    Parámetros:
+        pantalla: La superficie donde se dibujarán las celdas.
+        fila: La fila de la celda que se desea cargar.
+        columna: La columna de la celda que se desea cargar.
+        x: La coordenada x de la esquina superior izquierda de la celda en la pantalla.
+        y: La coordenada y de la esquina superior izquierda de la celda en la pantalla.
+        tam_casilla: El tamaño de la celda (ancho y alto).
+        matriz: La matriz que representa el tablero de juego donde las celdas pueden contener números o minas.
+        banderas: Una matriz que indica si hay una bandera en una celda específica.
+        descubiertas: Una matriz que indica qué celdas han sido descubiertas (True) o no (False).
+        imagenes: Una lista de imágenes que se usarán para representar diferentes tipos de celdas.
     """
     if descubiertas[fila][columna]:
         if matriz[fila][columna] == 0:
@@ -288,7 +301,7 @@ Maneja la representación de una sola celda en el juego Buscaminas.
         if banderas[fila][columna]:
             dibujar_celda(pantalla, x, y, tam_casilla, "bandera", imagenes)
 
-def dibujar_tablero(matriz, descubiertas, banderas, pantalla, tam_casilla):
+def dibujar_tablero(matriz:list, descubiertas:list, banderas:int, pantalla, tam_casilla:int) -> None:
     """
     Dibuja el tablero de juego en la pantalla.
 
@@ -313,7 +326,7 @@ def dibujar_tablero(matriz, descubiertas, banderas, pantalla, tam_casilla):
             y = fila * tam_casilla + 200  # Ajustar para el área de puntaje
             cargar_imagenes_celdas(pantalla, fila, columna, x, y, tam_casilla, matriz, banderas, descubiertas, imagenes)
 
-def crear_matriz(filas, columnas, valor_inicial):
+def crear_matriz_booleana(filas:int, columnas:int, valor_inicial:bool) -> list:
     """
     Crea una matriz (lista de listas) con las dimensiones especificadas.
     Cada celda se inicializa con el valor proporcionado.
@@ -331,25 +344,21 @@ def crear_matriz(filas, columnas, valor_inicial):
         matriz.append(fila)
     return matriz
                     
-def descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas):
+def descubrir_vacias(fila:int, columna:int, matriz:list, descubiertas:list, filas:int, columnas:int) ->  None:
     """
-    Realiza la inundación de celdas vacías en el juego de Buscaminas.
+    Descubre automáticamente las celdas comenzando desde una celda específica y expandiéndose a sus celdas adyacentes si son vacías.
 
-    La función utiliza una pila para simular la recursión de inundación.
-    Comienza con la celda pasada como parámetro y va agregando todas
-    las celdas adyacentes que no estén descubiertas. Si una celda es
-    vacía, se agregan todas sus celdas adyacentes no descubiertas. Si
-    una celda contiene una mina, se sale de la función sin agregar
-    celdas adyacentes.
+    Parámetros:
+        matriz: La matriz del tablero de juego donde cada celda puede ser una mina, un número o vacía.
+        descubiertas: Una matriz que indica qué celdas han sido descubiertas (True) o no (False).
+        fila: La coordenada de la fila de la celda desde la cual iniciar el descubrimiento.
+        columna: La coordenada de la columna de la celda desde la cual iniciar el descubrimiento.
+        filas: El número total de filas en el tablero.
+        columnas: El número total de columnas en el tablero.
 
-    :param fila: Fila de la celda a inundar.
-    :param columna: Columna de la celda a inundar.
-    :param matriz: Matriz del juego que contiene los valores de las celdas.
-    :param descubiertas: Matriz que indica las celdas descubiertas.
-    :param filas: Número de filas de la matriz.
-    :param columnas: Número de columnas de la matriz.
+    La función explora la celda inicial y, si la celda es vacía, continúa descubriendo las celdas adyacentes no descubiertas. El proceso se repite de manera iterativa para cada celda adyacente vacía, hasta que se descubren todas las celdas vacías conectadas a la celda inicial. Si encuentra celdas con minas o números, el proceso se detiene en ellas.
     """
-    # Usamos una pila para simular la recursión de inundación.
+
     celdas_por_descubrir = [(fila, columna)]
     while celdas_por_descubrir:
         celda = celdas_por_descubrir.pop()
@@ -372,7 +381,7 @@ def descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas):
     
         
 
-def ajustar_tamano_casilla(filas, columnas):
+def ajustar_tamano_casilla(filas:int, columnas:int) -> int:
     """
     Ajusta el tamaño de las celdas del tablero de juego de acuerdo al tamaño de la pantalla y al número de filas y columnas.
 
@@ -405,22 +414,30 @@ def ajustar_tamano_casilla(filas, columnas):
 
     return tam_casilla
 
-def manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, descubiertas, puntaje, num_minas, cantidad_celdas, SONIDO_FIN_JUEGO, SONIDO_CELDA_DESCUBIERTA, SONIDO_VICTORIA):
+def manejar_evento(fila:int, columna:int, filas:int, columnas:int, event, matriz:list, banderas:list, descubiertas:list, puntaje:int, num_minas:int, cantidad_celdas:int, SONIDO_FIN_JUEGO, SONIDO_CELDA_DESCUBIERTA, SONIDO_VICTORIA) -> dict:
     """
-    Maneja un evento de clic en el juego Buscaminas.
-    
-    :param fila: Fila del clic.
-    :param columna: Columna del clic.
-    :param filas: Número total de filas.
-    :param columnas: Número total de columnas.
-    :param event: Evento de clic recibido.
-    :param matriz: Matriz del juego.
-    :param banderas: Matriz que indica si hay una bandera en una celda.
-    :param descubiertas: Matriz que indica si una celda ya está descubierta.
-    :param puntaje: Puntuación actual.
-    :param SONIDO_FIN_JUEGO: Sonido que se reproduce al perder.
-    :param SONIDO_CELDA_DESCUBIERTA: Sonido que se reproduce al descubrir una celda.
-    :return: Actualización del puntaje y estado de fin de juego.
+    Maneja los eventos del juego, como el clic del jugador en una celda, y actualiza el estado del juego en función de la acción realizada.
+
+    Parámetros:
+        fila: La fila de la celda sobre la que se hizo clic.
+        columna: La columna de la celda sobre la que se hizo clic.
+        filas: El número total de filas en el tablero.
+        columnas: El número total de columnas en el tablero.
+        event: El evento que se maneja, que incluye información sobre el clic del jugador.
+        matriz: La matriz que representa el estado del tablero, donde las minas están representadas por `-1` y los números indican la cantidad de minas adyacentes.
+        banderas: Una matriz que indica si una celda tiene una bandera colocada.
+        descubiertas: Una matriz que indica si una celda ha sido descubierta o no.
+        puntaje: El puntaje actual del jugador, que se incrementa cuando se descubren celdas válidas.
+        num_minas: El número total de minas en el tablero.
+        cantidad_celdas: El número total de celdas en el tablero.
+        SONIDO_FIN_JUEGO: El sonido que se reproduce cuando el jugador pierde.
+        SONIDO_CELDA_DESCUBIERTA: El sonido que se reproduce cuando el jugador descubre una celda.
+        SONIDO_VICTORIA: El sonido que se reproduce cuando el jugador gana.
+
+    Retorna:
+        Un diccionario con el puntaje actualizado y un indicador (`fin_juego`) de si el juego ha terminado.
+
+    La función maneja los clics del jugador en las celdas del tablero. Si el jugador hace clic en una celda con una mina, el juego termina, se revelan todas las minas y se reproduce el sonido de fin de juego. Si el jugador hace clic en una celda vacía, se descubren las celdas adyacentes vacías. Si el jugador ha ganado (es decir, ha descubierto todas las celdas no minadas), se reproduce el sonido de victoria. Finalmente, si el juego ha terminado, se solicita al jugador su nombre y se guarda el puntaje.
     """
     resultado = {
         "puntaje": puntaje,
@@ -435,7 +452,7 @@ def manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, desc
                         if matriz[i][j] == -1:
                             descubiertas[i][j] = True
                 SONIDO_FIN_JUEGO.play()
-                print("¡Boom! Has encontrado una mina. Has perdido la partida.")
+                print("Fin del juego! Se descubrió una mina.")
                 resultado["fin_juego"] = True                    
             else:
                 if not descubiertas[fila][columna]:
@@ -454,7 +471,7 @@ def manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, desc
     
     return resultado
 
-def reiniciar(filas, columnas, num_minas):
+def reiniciar(filas:int, columnas:int, num_minas:int):
     """
     Reinicia las variables del juego para empezar una nueva partida con los mismos parámetros.
 
@@ -464,13 +481,13 @@ def reiniciar(filas, columnas, num_minas):
     :return: Tupla con la matriz, el estado de las casillas descubiertas, el estado de las banderas, el puntaje y el contador de segundos
     """
     matriz = crear_matriz_buscamina(filas, columnas, num_minas) # Reiniciar la matriz
-    descubiertas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las casillas descubiertas
-    banderas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las banderas
+    descubiertas = crear_matriz_booleana(filas, columnas, False)  # Reiniciar el estado de las casillas descubiertas
+    banderas = crear_matriz_booleana(filas, columnas, False)  # Reiniciar el estado de las banderas
     puntaje = 0
     contador_segundos = 0
     return matriz, descubiertas, banderas, puntaje, contador_segundos
 
-def guardar_puntaje(nick, puntaje, archivo="puntajes.json"):
+def guardar_puntaje(nick:str, puntaje:int, archivo:str="puntajes.json") -> None:
     """
     Guarda un nuevo puntaje en un archivo JSON.
 
@@ -478,10 +495,9 @@ def guardar_puntaje(nick, puntaje, archivo="puntajes.json"):
     Si el archivo no existe, lo crea y guarda el nuevo puntaje.
 
     Args:
-        nick (str): El apodo del jugador que ha obtenido el puntaje.
-        puntaje (int): La puntuación obtenida por el jugador.
-        archivo (str): Ruta del archivo JSON donde se guardan los puntajes. 
-                       Por defecto es "puntajes.json".
+        nick: El apodo del jugador que ha obtenido el puntaje.
+        puntaje: La puntuación obtenida por el jugador.
+        archivo: Ruta del archivo JSON donde se guardan los puntajes. Por defecto es "puntajes.json".
     """
     datos = []
 
@@ -506,7 +522,7 @@ def guardar_puntaje(nick, puntaje, archivo="puntajes.json"):
         json.dump(datos, file, indent=4)
 
 # Pantalla para pedir el nombre (nick)
-def pedir_nick():
+def pedir_nick() -> str:
     """
     Pide al usuario que ingrese un nick (nombre de usuario) para el juego.
 
@@ -517,7 +533,6 @@ def pedir_nick():
     la tecla Backspace. Para confirmar el nick, debe presionar Enter.
 
     La función devuelve el nick ingresado por el usuario.
-
     """
     nick = ""
     ingresando = True
@@ -592,25 +607,25 @@ def ordenar(lista: list, clave: str) -> list:
                 swap(lista, i, j)
     return lista
 
-def generar_json(nombre: str, lista: list, clave: str):
+def generar_json(nombre:str, lista:list, clave:str) -> None:
     """
     Genera un archivo JSON con la lista proporcionada bajo la clave dada.
 
     Args:
-        nombre (str): El nombre del archivo JSON a generar.
-        lista (list): La lista de datos a guardar en el archivo JSON.
-        clave (str): La clave bajo la cual se guardará la lista en el archivo JSON.
+        nombre: El nombre del archivo JSON a generar.
+        lista: La lista de datos a guardar en el archivo JSON.
+        clave: La clave bajo la cual se guardará la lista en el archivo JSON.
     """
     data = {clave: lista}
     with open(nombre, 'w') as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
-def leer_archivo(archivo_nombre):
+def leer_archivo(archivo_nombre:str) -> dict:
     """
     Lee el contenido de un archivo JSON. Si el archivo no existe, devuelve un diccionario vacío.
 
     Args:
-        archivo_nombre (str): Ruta del archivo JSON.
+        archivo_nombre: Ruta del archivo JSON.
 
     Returns:
         dict: Contenido del archivo JSON como un diccionario. Si no existe, retorna un diccionario vacío.
@@ -623,13 +638,13 @@ def leer_archivo(archivo_nombre):
 
     return contenido
     
-def guardar_puntajes(nuevo_puntaje, archivo_puntajes):
+def guardar_puntajes(nuevo_puntaje:dict, archivo_puntajes:str) -> None:
     """
     Agrega un nuevo puntaje al archivo JSON.
 
     Args:
-        nuevo_puntaje (dict): Diccionario con las claves "apodo" y "puntos" que representa el puntaje.
-        archivo_puntajes (str): Ruta del archivo JSON donde se guardan los puntajes.
+        nuevo_puntaje: Diccionario con las claves "apodo" y "puntos" que representa el puntaje.
+        archivo_puntajes: Ruta del archivo JSON donde se guardan los puntajes.
     """
     datos = leer_archivo(archivo_puntajes)
     puntajes = datos.get("puntajes", [])  # Obtiene la lista de puntajes o la inicializa vacía
@@ -638,7 +653,7 @@ def guardar_puntajes(nuevo_puntaje, archivo_puntajes):
     puntajes = ordenar(puntajes, clave='puntos')  # Ordena los puntajes
     generar_json(archivo_puntajes, puntajes, "puntajes")
 
-def cargar_puntajes(archivo_puntajes):
+def cargar_puntajes(archivo_puntajes:str) -> list:
     """
     Carga las puntuaciones más altas desde un archivo JSON.
 
@@ -667,19 +682,19 @@ def cargar_puntajes(archivo_puntajes):
     # Retornar los puntajes (que puede ser una lista vacía en caso de error)
     return puntajes
 
-def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, en_menu):
+def mostrar_ranking(pantalla, archivo_puntajes:str, imagen_fondo, ancho:int, en_menu:bool) -> bool:
     """
-    Muestra la clasificación de los 5 mejores puntajes en la pantalla.
+    Muestra el ranking de los 5 mejores puntajes en una pantalla, junto con un botón para volver al menú.
 
-    Args:
-        pantalla (pygame.Surface): Superficie de Pygame donde se dibujará el ranking.
-        archivo_puntajes (str): Ruta al archivo JSON que contiene los puntajes.
-        imagen_fondo (pygame.Surface): Imagen de fondo para el ranking.
-        ancho (int): Ancho de la pantalla.
-        alto (int): Alto de la pantalla.
+    Parámetros:
+        pantalla (pygame.Surface): La superficie sobre la que se dibujarán el ranking y el botón de volver.
+        archivo_puntajes (str): El archivo donde se encuentran los puntajes almacenados, desde el cual se cargan.
+        imagen_fondo (pygame.Surface): La imagen que se usará como fondo en la pantalla de ranking.
+        ancho (int): El ancho de la pantalla para posicionar correctamente los elementos.
+        en_menu (bool): Un valor que indica si el jugador está en el menú o en la pantalla de ranking. Se modifica al regresar al menú.
 
-    Returns:
-        str: "menu_principal" si el usuario hace clic en el botón "Atrás".
+    Retorna:
+        bool: El valor actualizado de `en_menu`, que se establece en `True` cuando el jugador presiona el botón de volver.
     """
     en_menu = False
     puntajes = cargar_puntajes(archivo_puntajes)
@@ -707,13 +722,18 @@ def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, en_menu):
         pygame.display.flip()
     return en_menu
    
-def verificar_victoria(matriz, descubiertas, num_minas, cantidad_celdas):
+def verificar_victoria(matriz:list, descubiertas:list, num_minas:int, cantidad_celdas:int) -> bool:
     """
-    Verifica si el usuario ha ganado el juego, es decir, ha marcado todas las minas con banderas y no ha marcado otras celdas.
+    Verifica si el jugador ha ganado el juego comprobando el número de celdas descubiertas.
 
-    :param matriz: Matriz del juego.
-    :param banderas: Matriz que indica si hay una bandera en una celda.
-    :return: True si el usuario ha ganado, False en caso contrario.
+    Args:
+        matriz: La matriz del tablero de juego donde las minas están representadas por -1.
+        descubiertas: Una matriz que indica qué celdas han sido descubiertas.
+        num_minas: El número total de minas en el tablero.
+        cantidad_celdas: El número total de celdas en el tablero.
+
+    Returns:
+        bool: True si el número de celdas descubiertas que no son minas es igual al número total de celdas que no son minas, indicando victoria; False en caso contrario.
     """
     resultado = False
     contador_true = 0

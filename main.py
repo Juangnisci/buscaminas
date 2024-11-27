@@ -69,8 +69,8 @@ while ejecutando:
     num_minas = nivel[2]
     cantidad_celdas = filas * columnas
     matriz = crear_matriz_buscamina(filas, columnas, num_minas)
-    descubiertas = crear_matriz(filas, columnas, False)
-    banderas = crear_matriz(filas, columnas, False)
+    descubiertas = crear_matriz_booleana(filas, columnas, False)
+    banderas = crear_matriz_booleana(filas, columnas, False)
     puntaje = 0
     fin_juego = False
     tam_casilla = ajustar_tamano_casilla(filas, columnas)
@@ -107,7 +107,6 @@ while ejecutando:
                         banderas = reinicio[2]
                         puntaje = reinicio[3]
                         contador_segundos = reinicio[4]
-                        
                     elif boton_volver.collidepoint(event.pos):  #Volvemos al menú
                             fin_juego = True
                 
@@ -128,3 +127,4 @@ while ejecutando:
         
     # Fin de juego y volver al menú
     pygame.time.wait(2000)
+    
