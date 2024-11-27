@@ -592,7 +592,7 @@ def swap(lista: list, indice_uno: int, indice_dos: int) -> list:
 
 def ordenar(lista: list, clave: str) -> list: 
     """
-    Ordena una lista de diccionarios en base a una clave de forma ascendente o descendente.
+    Ordena una lista de diccionarios en base a una clave de forma descendente.
 
     Args:
         lista: Lista de diccionarios a ordenar.
