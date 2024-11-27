@@ -306,5 +306,25 @@
     {
         "nick": "p",
         "puntaje": 1
+    },
+    {
+        "nick": "7",
+        "puntaje": 1
+    },
+    {
+        "nick": "",
+        "puntaje": 1
+    },
+    {
+        "nick": "d",
+        "puntaje": 0
+    },
+    {
+        "nick": "Fr",
+        "puntaje": 0
+    },
+    {
+        "nick": "7",
+        "puntaje": 2
     }
 ]

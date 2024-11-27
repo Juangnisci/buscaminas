@@ -546,7 +546,7 @@ def pedir_nick() -> str:
                 pygame.quit()
                 exit()
             if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_RETURN:  # Confirmar con Enter
+                if evento.key == pygame.K_RETURN and len(nick) > 0:  # Confirmar con Enter
                     ingresando = False
                 elif evento.key == pygame.K_BACKSPACE:  # Borrar un carácter
                     nick = nick[:-1]
@@ -557,15 +557,15 @@ def pedir_nick() -> str:
 
         # Dibujar pantalla de entrada
         pantalla.blit(imagen_fondo, (0, 0))  # Fondo
-        texto = fuente.render("Ingresa tu Nick (Enter para confirmar):", True, "white")
-        texto_nick = fuente.render(nick, True, "white")
+        texto = fuente.render("Ingresa tu Nick (Enter para confirmar):", True, BLANCO)
+        texto_nick = fuente.render(nick, True, BLANCO)
 
         # Rectángulo de contraste
         rect_x = ANCHO // 2 - texto.get_width() // 2 - 10
         rect_y = ALTO // 3 - 10
         rect_ancho = texto.get_width() + 20
         rect_alto = texto.get_height() + 200
-        pygame.draw.rect(pantalla, "black", (rect_x, rect_y, rect_ancho, rect_alto))
+        pygame.draw.rect(pantalla, NEGRO, (rect_x, rect_y, rect_ancho, rect_alto))
 
         # Dibujar el texto encima del rectángulo
         pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 3))
@@ -603,7 +603,6 @@ def ordenar(lista: list, clave: str) -> list:
     """
     for i in range(len(lista) - 1):
         for j in range(i + 1, len(lista)):
-            # Cambié la condición para orden descendente
             if int(lista[i][clave]) < int(lista[j][clave]):
                 swap(lista, i, j)
     return lista
