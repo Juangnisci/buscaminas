@@ -697,12 +697,10 @@ def mostrar_ranking(pantalla, archivo_puntajes:str, imagen_fondo, ancho:int, en_
     """
     en_menu = False
     puntajes = cargar_puntajes(archivo_puntajes)
-    puntajes = ordenar(puntajes, clave='puntaje')[:5]  # Top 5 puntajes
+    puntajes = ordenar(puntajes, clave='puntaje')[:3]  # Top 5 puntajes
     pantalla.blit(imagen_fondo, (0, 0))
-    
-    texto_puntajes = fuente.render("TOP 5", True, "white")
-    pantalla.blit(texto_puntajes, (ancho // 2 - texto_puntajes.get_width() // 2, 100))
-    desplazamiento_y = 150
+    dibujar_texto(pantalla, "TOP 3", 100, ancho / 2, 100)
+    desplazamiento_y = 300
     for clave in puntajes:
         dibujar_texto(pantalla, f"{clave['nick']}: {clave['puntaje']}", 36, ancho / 2, desplazamiento_y)
         desplazamiento_y += 50
