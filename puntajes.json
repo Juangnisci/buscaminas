@@ -326,5 +326,9 @@
     {
         "nick": "7",
         "puntaje": 2
+    },
+    {
+        "nick": "pep",
+        "puntaje": 1
     }
 ]

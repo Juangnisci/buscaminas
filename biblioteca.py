@@ -491,6 +491,40 @@ def reiniciar(filas:int, columnas:int, num_minas:int):
     contador_segundos = 0
     return matriz, descubiertas, banderas, puntaje, contador_segundos
 
+def swap(lista: list, indice_uno: int, indice_dos: int) -> list:
+    """
+    Swapea los valores de dos índices de una lista.
+
+    Args:
+        lista: Lista que contiene los valores a intercambiar.
+        indice_uno: Índice del valor a intercambiar.
+        indice_dos: Índice del segundo valor a intercambiar.
+
+    Returns:
+        list: Retorna la lista con los valores intercambiados.
+    """
+    auxiliar = lista[indice_uno]
+    lista[indice_uno] = lista[indice_dos]
+    lista[indice_dos] = auxiliar
+    return lista  
+
+def ordenar(lista: list, clave: str) -> list: 
+    """
+    Ordena una lista de diccionarios en base a una clave de forma descendente.
+
+    Args:
+        lista: Lista de diccionarios a ordenar.
+        clave: Clave a usar para ordenar la lista.
+
+    Returns:
+        Retorna la lista de diccionarios ordenada.
+    """
+    for i in range(len(lista) - 1):
+        for j in range(i + 1, len(lista)):
+            if int(lista[i][clave]) < int(lista[j][clave]):
+                swap(lista, i, j)
+    return lista
+
 def guardar_puntaje(nick:str, puntaje:int, archivo:str="puntajes.json") -> None:
     """
     Guarda un nuevo puntaje en un archivo JSON.
@@ -504,7 +538,6 @@ def guardar_puntaje(nick:str, puntaje:int, archivo:str="puntajes.json") -> None:
         archivo: Ruta del archivo JSON donde se guardan los puntajes. Por defecto es "puntajes.json".
     """
     datos = []
-
     # Verificar si el archivo existe abriéndolo directamente
     archivo_existe = False
     with open(archivo, "a+") as file:
@@ -512,15 +545,12 @@ def guardar_puntaje(nick:str, puntaje:int, archivo:str="puntajes.json") -> None:
         contenido = file.read()
         if contenido:  # Si tiene contenido, se considera que existe
             archivo_existe = True
-
     if archivo_existe:
         # Leer datos existentes
         with open(archivo, "r") as file:
             datos = json.load(file)
-
     # Agregar el nuevo puntaje
     datos.append({"nick": nick, "puntaje": puntaje})
-
     # Guardar los datos actualizados en el archivo JSON
     with open(archivo, "w") as file:
         json.dump(datos, file, indent=4)
@@ -573,53 +603,6 @@ def pedir_nick() -> str:
         pygame.display.flip()
     return nick
 
-def swap(lista: list, indice_uno: int, indice_dos: int) -> list:
-    """
-    Swapea los valores de dos índices de una lista.
-
-    Args:
-        lista: Lista que contiene los valores a intercambiar.
-        indice_uno: Índice del valor a intercambiar.
-        indice_dos: Índice del segundo valor a intercambiar.
-
-    Returns:
-        list: Retorna la lista con los valores intercambiados.
-    """
-    auxiliar = lista[indice_uno]
-    lista[indice_uno] = lista[indice_dos]
-    lista[indice_dos] = auxiliar
-    return lista  
-
-def ordenar(lista: list, clave: str) -> list: 
-    """
-    Ordena una lista de diccionarios en base a una clave de forma descendente.
-
-    Args:
-        lista: Lista de diccionarios a ordenar.
-        clave: Clave a usar para ordenar la lista.
-
-    Returns:
-        Retorna la lista de diccionarios ordenada.
-    """
-    for i in range(len(lista) - 1):
-        for j in range(i + 1, len(lista)):
-            if int(lista[i][clave]) < int(lista[j][clave]):
-                swap(lista, i, j)
-    return lista
-
-def generar_json(nombre:str, lista:list, clave:str) -> None:
-    """
-    Genera un archivo JSON con la lista proporcionada bajo la clave dada.
-
-    Args:
-        nombre: El nombre del archivo JSON a generar.
-        lista: La lista de datos a guardar en el archivo JSON.
-        clave: La clave bajo la cual se guardará la lista en el archivo JSON.
-    """
-    data = {clave: lista}
-    with open(nombre, 'w') as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
-
 def leer_archivo(archivo_nombre:str) -> dict:
     """
     Lee el contenido de un archivo JSON. Si el archivo no existe, devuelve un diccionario vacío.
@@ -635,23 +618,7 @@ def leer_archivo(archivo_nombre:str) -> dict:
             contenido = json.load(archivo)
     except FileNotFoundError:
         contenido = {}  # Devuelve un diccionario vacío si el archivo no existe
-
     return contenido
-    
-def guardar_puntajes(nuevo_puntaje:dict, archivo_puntajes:str) -> None:
-    """
-    Agrega un nuevo puntaje al archivo JSON.
-
-    Args:
-        nuevo_puntaje: Diccionario con las claves "apodo" y "puntos" que representa el puntaje.
-        archivo_puntajes: Ruta del archivo JSON donde se guardan los puntajes.
-    """
-    datos = leer_archivo(archivo_puntajes)
-    puntajes = datos.get("puntajes", [])  # Obtiene la lista de puntajes o la inicializa vacía
-
-    puntajes.append(nuevo_puntaje)
-    puntajes = ordenar(puntajes, clave='puntos')  # Ordena los puntajes
-    generar_json(archivo_puntajes, puntajes, "puntajes")
 
 def cargar_puntajes(archivo_puntajes:str) -> list:
     """
@@ -664,7 +631,7 @@ def cargar_puntajes(archivo_puntajes:str) -> list:
         Lista de diccionarios que representan las puntuaciones más altas.
     """
     datos = leer_archivo(archivo_puntajes)
-    puntajes = []
+    lista_nick_puntaje = []
 
     # Validar si el archivo fue leído correctamente
     if datos is None:
@@ -672,15 +639,14 @@ def cargar_puntajes(archivo_puntajes:str) -> list:
     else:
         # Validar el tipo de los datos cargados
         if type(datos) == dict:
-            puntajes = datos.get("puntajes", [])
+            lista_nick_puntaje = datos.get("puntajes", [])
         elif type(datos) == list:
-            puntajes = datos
+            lista_nick_puntaje = datos
         else:
             # Caso de formato inesperado
             print(f"Advertencia: El archivo '{archivo_puntajes}' tiene un formato inesperado.")
-    
     # Retornar los puntajes (que puede ser una lista vacía en caso de error)
-    return puntajes
+    return lista_nick_puntaje
 
 def mostrar_ranking(pantalla, archivo_puntajes:str, imagen_fondo, ancho:int, en_menu:bool) -> bool:
     """
@@ -698,7 +664,7 @@ def mostrar_ranking(pantalla, archivo_puntajes:str, imagen_fondo, ancho:int, en_
     """
     en_menu = False
     puntajes = cargar_puntajes(archivo_puntajes)
-    puntajes = ordenar(puntajes, clave='puntaje')[:3]  # Top 5 puntajes
+    puntajes = ordenar(puntajes, clave='puntaje')[:3]  # Top 3 puntajes
     pantalla.blit(imagen_fondo, (0, 0))
     dibujar_texto(pantalla, "TOP 3", 100, ancho / 2, 100)
     desplazamiento_y = 300
