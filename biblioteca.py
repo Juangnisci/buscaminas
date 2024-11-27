@@ -351,10 +351,10 @@ def descubrir_vacias(fila:int, columna:int, matriz:list, descubiertas:list, fila
     Descubre automáticamente las celdas comenzando desde una celda específica y expandiéndose a sus celdas adyacentes si son vacías.
 
     Parámetros:
-        matriz: La matriz del tablero de juego donde cada celda puede ser una mina, un número o vacía.
-        descubiertas: Una matriz que indica qué celdas han sido descubiertas (True) o no (False).
         fila: La coordenada de la fila de la celda desde la cual iniciar el descubrimiento.
         columna: La coordenada de la columna de la celda desde la cual iniciar el descubrimiento.
+        matriz: La matriz del tablero de juego donde cada celda puede ser una mina, un número o vacía.
+        descubiertas: Una matriz que indica qué celdas han sido descubiertas (True) o no (False).
         filas: El número total de filas en el tablero.
         columnas: El número total de columnas en el tablero.
 
@@ -576,9 +576,9 @@ def swap(lista: list, indice_uno: int, indice_dos: int) -> list:
     Swapea los valores de dos índices de una lista.
 
     Args:
-        lista (list): Lista que contiene los valores a intercambiar.
-        indice_uno (int): Índice del valor a intercambiar.
-        indice_dos (int): Índice del segundo valor a intercambiar.
+        lista: Lista que contiene los valores a intercambiar.
+        indice_uno: Índice del valor a intercambiar.
+        indice_dos: Índice del segundo valor a intercambiar.
 
     Returns:
         list: Retorna la lista con los valores intercambiados.
@@ -593,14 +593,11 @@ def ordenar(lista: list, clave: str) -> list:
     Ordena una lista de diccionarios en base a una clave de forma ascendente o descendente.
 
     Args:
-        lista (list): Lista de diccionarios a ordenar.
-        clave (str): Clave a usar para ordenar la lista.
-        ascendente (bool, opcional): Declara si la lista se ordena de forma ascendente o descendente. 
-                                     Se le asigna False para ordenar de forma descendente. 
-                                     (Si no se pasa ningún valor booleano, ordena de forma ascendente por defecto.)
+        lista: Lista de diccionarios a ordenar.
+        clave: Clave a usar para ordenar la lista.
 
     Returns:
-        list: Retorna la lista de diccionarios ordenada.
+        Retorna la lista de diccionarios ordenada.
     """
     for i in range(len(lista) - 1):
         for j in range(i + 1, len(lista)):
@@ -630,7 +627,7 @@ def leer_archivo(archivo_nombre:str) -> dict:
         archivo_nombre: Ruta del archivo JSON.
 
     Returns:
-        dict: Contenido del archivo JSON como un diccionario. Si no existe, retorna un diccionario vacío.
+        Contenido del archivo JSON como un diccionario. Si no existe, retorna un diccionario vacío.
     """
     try:
         with open(archivo_nombre, 'r') as archivo:
@@ -660,10 +657,10 @@ def cargar_puntajes(archivo_puntajes:str) -> list:
     Carga las puntuaciones más altas desde un archivo JSON.
 
     Args:
-        archivo_puntajes (str): Ruta del archivo JSON que contiene los puntajes.
+        archivo_puntajes: Ruta del archivo JSON que contiene los puntajes.
 
     Returns:
-        list: Lista de diccionarios que representan las puntuaciones más altas.
+        Lista de diccionarios que representan las puntuaciones más altas.
     """
     datos = leer_archivo(archivo_puntajes)
     puntajes = []
@@ -689,14 +686,14 @@ def mostrar_ranking(pantalla, archivo_puntajes:str, imagen_fondo, ancho:int, en_
     Muestra el ranking de los 5 mejores puntajes en una pantalla, junto con un botón para volver al menú.
 
     Parámetros:
-        pantalla (pygame.Surface): La superficie sobre la que se dibujarán el ranking y el botón de volver.
-        archivo_puntajes (str): El archivo donde se encuentran los puntajes almacenados, desde el cual se cargan.
-        imagen_fondo (pygame.Surface): La imagen que se usará como fondo en la pantalla de ranking.
-        ancho (int): El ancho de la pantalla para posicionar correctamente los elementos.
-        en_menu (bool): Un valor que indica si el jugador está en el menú o en la pantalla de ranking. Se modifica al regresar al menú.
+        pantalla: La superficie sobre la que se dibujarán el ranking y el botón de volver.
+        archivo_puntajes: El archivo donde se encuentran los puntajes almacenados, desde el cual se cargan.
+        imagen_fondo: La imagen que se usará como fondo en la pantalla de ranking.
+        ancho: El ancho de la pantalla para posicionar correctamente los elementos.
+        en_menu: Un valor que indica si el jugador está en el menú o en la pantalla de ranking. Se modifica al regresar al menú.
 
     Retorna:
-        bool: El valor actualizado de `en_menu`, que se establece en `True` cuando el jugador presiona el botón de volver.
+        El valor actualizado de `en_menu`, que se establece en `True` cuando el jugador presiona el botón de volver.
     """
     en_menu = False
     puntajes = cargar_puntajes(archivo_puntajes)
@@ -735,7 +732,7 @@ def verificar_victoria(matriz:list, descubiertas:list, num_minas:int, cantidad_c
         cantidad_celdas: El número total de celdas en el tablero.
 
     Returns:
-        bool: True si el número de celdas descubiertas que no son minas es igual al número total de celdas que no son minas, indicando victoria; False en caso contrario.
+        True si el número de celdas descubiertas que no son minas es igual al número total de celdas que no son minas, indicando victoria; False en caso contrario.
     """
     resultado = False
     contador_true = 0
