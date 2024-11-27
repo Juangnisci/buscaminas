@@ -14,7 +14,6 @@ COLOR_BOTON = (0, 200, 0)
 COLOR_TEXTO = (255, 255, 255)
 
 # Variables del juego
-# puntos = 0
 fin_juego = False
 silencio = False  # Bandera de silencio para sonidos
 
@@ -89,7 +88,7 @@ def crear_matriz_buscamina(filas:int, columnas:int, num_minas:int) -> list:
                 continue
             for i in range(fila - 1, fila + 2):
                 for j in range(columna - 1, columna + 2):
-                    if 0 <= i < filas and 0 <= j < columnas and matriz[i][j] == -1:
+                    if 0 <= i < filas and 0 <= j < columnas and matriz[i][j] == -1: #verifica si esta adentro de la matriz para que no rompa
                         matriz[fila][columna] += 1
             
     return matriz
@@ -231,7 +230,7 @@ def cargar_imagenes():
     imagen_mina_explotada = pygame.image.load("archivos_extras/bomb-at-clicked-block.png")
     imagen_bandera_mina = pygame.image.load("archivos_extras/flag.png")
     imagen_vacia = pygame.image.load("archivos_extras/empty-block.png")
-    return imagenes_numeros, imagen_mina, imagen_mina_explotada, imagen_bandera_mina, imagen_vacia,
+    return imagenes_numeros, imagen_mina, imagen_mina_explotada, imagen_bandera_mina, imagen_vacia
 
 def dibujar_celda(pantalla, x:int, y:int, tam_casilla:int, tipo:str, imagenes:list, numero:int=None):
     """
@@ -320,7 +319,8 @@ def dibujar_tablero(matriz:list, descubiertas:list, banderas:int, pantalla, tam_
         - tam_casilla: Tamaño de cada celda en píxeles.
     """
     imagenes = cargar_imagenes()
-    filas, columnas = len(matriz), len(matriz[0])
+    filas = len(matriz)
+    columnas = len(matriz[0])
     ancho_tablero = tam_casilla * columnas
     desplazamiento_x = (ANCHO - ancho_tablero) // 2
     for fila in range(filas):
@@ -345,7 +345,7 @@ def crear_matriz_booleana(filas:int, columnas:int, valor_inicial:bool) -> list:
         for _ in range(columnas):
             fila.append(valor_inicial)
         matriz.append(fila)
-    return matriz
+    return matriz    #inicializa en false y al clik convierte en true
                     
 def descubrir_vacias(fila:int, columna:int, matriz:list, descubiertas:list, filas:int, columnas:int) ->  None:
     """

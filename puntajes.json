@@ -330,5 +330,13 @@
     {
         "nick": "pep",
         "puntaje": 1
+    },
+    {
+        "nick": "i",
+        "puntaje": 2
+    },
+    {
+        "nick": "e",
+        "puntaje": 0
     }
 ]
