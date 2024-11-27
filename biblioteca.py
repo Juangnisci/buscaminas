@@ -3,14 +3,12 @@ import pygame, random, sys, json
 
 pygame.init()
 pygame.mixer.init()
-
 ANCHO = 1000
 ALTO = 800
 BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
-NOMBRE_FUENTE = pygame.font.SysFont("Pixeled.ttf", 20, bold=True)
+NOMBRE_FUENTE = pygame.font.SysFont("archivos_extras/VCRosdNEUE.ttf", 35, bold=True)
 ARCHIVO_PUNTAJES = "puntajes.json"
-reloj = pygame.time.Clock()
 
 
 # Colores
@@ -26,23 +24,22 @@ fin_juego = False
 silencio = False  # Bandera de silencio para sonidos
 
 # Cargar y configurar sonidos
-sonido_fondo = pygame.mixer.Sound("ringtones-got-theme.mp3")
+sonido_fondo = pygame.mixer.Sound("archivos_extras/ringtones-got-theme.mp3")
 sonido_fondo.set_volume(0.2) # Configurar volumen set_volume es la cantidad de sonido que se reproduce, 0.2 es el porcentaje de volumen que se reproduce
 
 
 # Cargar iconos
-icono_sonido_encendido = pygame.image.load('unmute.png')
-icono_sonido_apagado = pygame.image.load('mute.png')
+icono_sonido_encendido = pygame.image.load('archivos_extras/unmute.png')
+icono_sonido_apagado = pygame.image.load('archivos_extras/mute.png')
 tamano_icono = 50
 posicion_icono = (ANCHO - tamano_icono - 10, 10)  # Esquina superior derecha
 
 # Cargar imagen de fondo
-imagen_fondo = pygame.image.load('fondo_buscaminas.jpeg')
+imagen_fondo = pygame.image.load('archivos_extras/fondo_buscaminas.jpeg')
 imagen_fondo = pygame.transform.scale(imagen_fondo, (ANCHO, ALTO))
 
 # Fuentes
-fuente = pygame.font.Font("Pixeled.ttf", 20)  # Tamaño de la fuente de texto (36 pixeles) 
-fuente_pequena = pygame.font.SysFont(None, 36)
+fuente = pygame.font.Font("archivos_extras/VCRosdNEUE.ttf", 35)  # Tamaño de la fuente de texto (36 pixeles) 
 
 # Configurar pantalla
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
@@ -65,14 +62,24 @@ def crear_matriz_en_0(filas, columnas):
     :return: Matriz de tamaño filas x columnas
     """
     matriz = []  # Inicializar matriz vacía
-    for i in range(filas):
+    for _ in range(filas):
         fila = []  # Crear una nueva fila
-        for j in range(columnas):
+        for _ in range(columnas):
             fila.append(0)  # Agregar 0 a la fila
         matriz.append(fila)  # Agregar la fila a la matriz
     return matriz
 
 def crear_matriz_buscamina(filas, columnas, num_minas):
+    """
+    Crea una matriz para el juego de Buscaminas con las dimensiones especificadas y coloca un número determinado de minas.
+
+    Las celdas que no contienen minas muestran el número de minas adyacentes.
+
+    :param filas: Número de filas de la matriz.
+    :param columnas: Número de columnas de la matriz.
+    :param num_minas: Número de minas a colocar en la matriz.
+    :return: Matriz de tamaño filas x columnas con minas y números indicando minas adyacentes.
+    """
     matriz = crear_matriz_en_0(filas, columnas)
     minas_colocadas = 0
     while minas_colocadas < num_minas:
@@ -91,33 +98,6 @@ def crear_matriz_buscamina(filas, columnas, num_minas):
                         matriz[fila][columna] += 1
     return matriz
 
-def modificar_matriz(matriz):
-    """
-    Modifica la matriz reemplazando las celdas con valor 0 por el número
-    de minas (-1) que están en las celdas contiguas.
-
-    :param matriz: La matriz que contiene los valores a modificar
-    :return: La matriz modificada
-    """
-    for i in range(len(matriz)):  # Recorrer las filas de la matriz
-        for j in range(len(matriz[0])):  # Recorrer las columnas de la matriz
-            if matriz[i][j] == 0:  # Solo modificar las celdas con valor 0
-                contiguas = 0  # Inicializar el contador de minas contiguas
-                # Recorrer las filas adyacentes (i-1, i, i+1)
-                for k in range(i - 1, i + 2):
-                    # Asegurarse de que k esté dentro de los límites de la matriz
-                    if k >= 0 and k < len(matriz):
-                        # Recorrer las columnas adyacentes (j-1, j, j+1)
-                        for l in range(j - 1, j + 2):
-                            # Asegurarse de que l esté dentro de los límites de la matriz
-                            if l >= 0 and l < len(matriz[0]):
-                                # Comprobar si hay una mina en la celda (k, l)
-                                if matriz[k][l] == -1:
-                                    contiguas += 1
-                # Si se encontraron minas contiguas, se actualiza la celda
-                if contiguas > 0:
-                    matriz[i][j] = contiguas
-    return matriz
 
 # Funciones de dibujo
 def dibujar_texto(surf, texto, tamano, x, y, alineacion="center"): 
@@ -135,7 +115,7 @@ def dibujar_texto(surf, texto, tamano, x, y, alineacion="center"):
         Returns:
             None
     """
-    fuente = pygame.font.Font("Pixeled.ttf", tamano) # Cargar fuente de texto en la superficie en el tamanio indicado 
+    fuente = pygame.font.Font("archivos_extras/VCRosdNEUE.ttf", tamano) # Cargar fuente de texto en la superficie en el tamanio indicado 
     superficie_texto = fuente.render(texto, True, BLANCO) # Rerpesenta el texto en la superficie
     rectangulo_texto = superficie_texto.get_rect() # Crea un rectángulo que cubre el texto
     if alineacion == "center": # Si la alineación es "centro" 
@@ -147,6 +127,23 @@ def dibujar_texto(surf, texto, tamano, x, y, alineacion="center"):
     surf.blit(superficie_texto, rectangulo_texto) # Rellena el rectángulo con el texto
 
 def dibujar_boton(texto, x, y, ancho, alto, color_inactivo, color_activo, accion = None):
+    """
+    Dibuja un botón en la pantalla con el texto proporcionado.
+
+    Args:
+        texto: El texto que se mostrará en el botón.
+        x: La coordenada x del botón.
+        y: La coordenada y del botón.
+        ancho: El ancho del botón.
+        alto: El alto del botón.
+        color_inactivo: El color del botón cuando no se encuentra sobre él.
+        color_activo: El color del botón cuando se encuentra sobre él.
+        accion: La acción que se realizará cuando se haga clic en el botón. Puede ser None.
+
+    Returns:
+        El rectángulo del botón.
+
+    """
     raton = pygame.mouse.get_pos()  # Obtener la posición del ratón
     clic = pygame.mouse.get_pressed()  # Obtener el estado del clic
 
@@ -159,12 +156,19 @@ def dibujar_boton(texto, x, y, ancho, alto, color_inactivo, color_activo, accion
     else:
         pygame.draw.rect(pantalla, color_inactivo, rect_boton)  # Botón inactivo
 
-    dibujar_texto(pantalla, texto, 16, rect_boton.centerx, rect_boton.centery - 18)
+    dibujar_texto(pantalla, texto, 30, rect_boton.centerx, rect_boton.centery - 18)
 
     return rect_boton  # Retornar el rectángulo del botón
 
 #Configuracion de niveles
 def seleccionar_nivel():
+    """
+    Presenta una pantalla para seleccionar el nivel de dificultad y devuelve una tupla con
+    el número de filas, columnas y minas que se utilizarán en el juego.
+
+    Returns:
+        resultado: Una tupla que determina la dificultad del juego (filas, columnas, num_minas)
+    """
     nivel_seleccionado = False
     resultado = None  # Variable auxiliar para almacenar el resultado
 
@@ -181,16 +185,14 @@ def seleccionar_nivel():
             elif event.type == pygame.MOUSEBUTTONDOWN:  # Detecta clic inicial
                 if boton_facil.collidepoint(event.pos):
                     resultado = (8, 8, 10)  # Fácil: 8x8 con 10 minas
-                    nivel = "facil"
                     nivel_seleccionado = True
                 elif boton_medio.collidepoint(event.pos):
                     resultado = (16, 16, 40)  # Medio: 16x16 con 40 minas
-                    nivel = "medio"
                     nivel_seleccionado = True
                 elif boton_dificil.collidepoint(event.pos):
                     resultado = (16, 30, 100)  # Difícil: 16x30 con 100 minas
-                    nivel = "dificil"
                     nivel_seleccionado = True
+  
 
         pygame.display.flip()
     
@@ -202,6 +204,17 @@ def seleccionar_nivel():
         
 #configuracion de sonido
 def alternar_sonido(silencio, sonido_fondo):
+    """
+    Alterna el estado de silencio del sonido de fondo. Si el sonido estaba
+    encendido, lo apaga y viceversa.
+
+    Parameters:
+        silencio (bool): Estado actual del sonido (True: apagado, False: encendido)
+        sonido_fondo (pygame.mixer.Sound): Sonido de fondo
+
+    Returns:
+        bool: Nuevo estado del sonido (True: apagado, False: encendido)
+    """
     nuevo_silencio = not silencio
     if nuevo_silencio:
         sonido_fondo.stop()
@@ -210,32 +223,46 @@ def alternar_sonido(silencio, sonido_fondo):
     return nuevo_silencio
 #Dibujar tablero
 def cargar_imagenes():
+    """
+    Carga las imágenes necesarias para dibujar el tablero. Retorna una tupla con 6 elementos:
+        - imagenes_numeros: Un diccionario con los números del 1 al 8 como clave y la imagen correspondiente como valor.
+        - imagen_mina: La imagen de una mina sin explotar.
+        - imagen_mina_explotada: La imagen de una mina explotada.
+        - imagen_bandera_mina: La imagen de una bandera que se coloca en una celda para indicar que contiene una mina.
+        - imagen_vacia: La imagen de una celda vacía.
+        - imagen_bandera_erronea: La imagen de una bandera que se coloca en una celda que no contiene una mina.
+
+    Returns:
+        tuple: (imagenes_numeros, imagen_mina, imagen_mina_explotada, imagen_bandera_mina, imagen_vacia, imagen_bandera_erronea)
+    """
+
     imagenes_numeros = {
         
-        1: pygame.image.load(r"1.png"),
-        2: pygame.image.load(r"2.png"),
-        3: pygame.image.load(r"3.png"),
-        4: pygame.image.load(r"4.png"),
-        5: pygame.image.load(r"5.png"),
-        6: pygame.image.load(r"6.png"),
-        7: pygame.image.load(r"7.png"),
-        8: pygame.image.load(r"8.png"),
+        1: pygame.image.load(r"archivos_extras/1.png"),
+        2: pygame.image.load(r"archivos_extras/2.png"),
+        3: pygame.image.load(r"archivos_extras/3.png"),
+        4: pygame.image.load(r"archivos_extras/4.png"),
+        5: pygame.image.load(r"archivos_extras/5.png"),
+        6: pygame.image.load(r"archivos_extras/6.png"),
+        7: pygame.image.load(r"archivos_extras/7.png"),
+        8: pygame.image.load(r"archivos_extras/8.png"),
     }
 
-    #mina_vacia = pygame.image.load(r"0.png")
-    imagen_mina = pygame.image.load(r"unclicked-bomb.png")
-    imagen_mina_explotada = pygame.image.load(r"bomb-at-clicked-block.png")
-    imagen_bandera_mina = pygame.image.load(r"flag.png")
-    imagen_vacia = pygame.image.load(r"empty-block.png")
-    # -------------------------------------------------------------------------------------------------
-    imagen_bandera_erronea = pygame.image.load(r"wrong-flag.png")
-    # -------------------------------------------------------------------------------------------------
+    imagen_mina = pygame.image.load(r"archivos_extras/unclicked-bomb.png")
+    imagen_mina_explotada = pygame.image.load(r"archivos_extras/bomb-at-clicked-block.png")
+    imagen_bandera_mina = pygame.image.load(r"archivos_extras/flag.png")
+    imagen_vacia = pygame.image.load(r"archivos_extras/empty-block.png")
 
-# AGREGUE EL imagen_bandera_erronea
-    return imagenes_numeros, imagen_mina, imagen_mina_explotada, imagen_bandera_mina, imagen_vacia, imagen_bandera_erronea
+
+
+    return imagenes_numeros, imagen_mina, imagen_mina_explotada, imagen_bandera_mina, imagen_vacia,
 
 def dibujar_celda(pantalla, x, y, tam_casilla, tipo, imagenes, numero=None):
-    imagenes_numeros, imagen_mina, imagen_mina_explotada, imagen_bandera_mina, imagen_vacia, imagen_bandera_erronea = imagenes
+    imagenes_numeros = imagenes[0]
+    imagen_mina = imagenes[1]
+    imagen_mina_explotada = imagenes[2]
+    imagen_bandera_mina = imagenes[3]
+    imagen_vacia = imagenes[4]
 
     if tipo == "mina_explotada":
         imagen_mina_explotada = pygame.transform.scale(imagen_mina_explotada, (tam_casilla, tam_casilla))
@@ -252,7 +279,7 @@ def dibujar_celda(pantalla, x, y, tam_casilla, tipo, imagenes, numero=None):
             imagen_redimensionada = pygame.transform.scale(imagen_numero, (tam_casilla, tam_casilla))
             pantalla.blit(imagen_redimensionada, (x, y))
     elif tipo == "vacia":
-        mina_vacia = pygame.image.load(r"0.png")
+        mina_vacia = pygame.image.load(r"archivos_extras/0.png")
         mina_vacia = pygame.transform.scale(mina_vacia, (tam_casilla, tam_casilla))
         pantalla.blit(mina_vacia, (x, y))
     elif tipo == "oculta":
@@ -260,24 +287,51 @@ def dibujar_celda(pantalla, x, y, tam_casilla, tipo, imagenes, numero=None):
         pantalla.blit(imagen_vacia_redimensionada, (x, y))
 
 def manejar_celda_juego_normal(pantalla, fila, columna, x, y, tam_casilla, matriz, banderas, descubiertas, imagenes): 
+    """
+Maneja la representación de una sola celda en el juego Buscaminas.
+
+    Esta función determina la representación visual de una celda en el tablero de juego en función de su estado actual. 
+    Dibuja la imagen apropiada para la celda, ya sea que esté descubierta, cubierta o marcada con una bandera.
+
+    :param pantalla: Superficie sobre la que dibujar.
+    :param fila: Índice de fila de la celda.
+    :param columna: Índice de columna de la celda.
+    :param x: posición de la coordenada X para dibujar la celda.
+    :param y: posición de la coordenada Y para dibujar la celda.
+    :param tam_casilla: Tamaño de la celda.
+    :param matriz: Matriz del juego que contiene los valores de las celdas.
+    :param banderas: Matriz que indica las celdas marcadas.
+    :param descubiertos: Matriz que indica células descubiertas.
+    :param imagenes: Tupla que contiene imágenes para diferentes estados de la celda.
+    """
     if descubiertas[fila][columna]:
         if matriz[fila][columna] == 0:
             dibujar_celda(pantalla, x, y, tam_casilla, "vacia", imagenes) 
         else:
             dibujar_celda(pantalla, x, y, tam_casilla, "numero", imagenes, matriz[fila][columna])
-# --------- INICIO PRUEBA -------------------------------------------------------------
         if matriz[fila][columna] == -1:  # Mina
-            # if banderas[fila][columna]:
-            #     dibujar_celda(pantalla, x, y, tam_casilla, "bandera", imagenes)
-            # else:
-                dibujar_celda(pantalla, x, y, tam_casilla, "mina_explotada", imagenes)
-# # --------- FIN PRUEBA -------------------------------------------------------------
+            dibujar_celda(pantalla, x, y, tam_casilla, "mina_explotada", imagenes)
     else:
         dibujar_celda(pantalla, x, y, tam_casilla, "oculta", imagenes)
         if banderas[fila][columna]:
             dibujar_celda(pantalla, x, y, tam_casilla, "bandera", imagenes)
 
 def dibujar_tablero(matriz, descubiertas, banderas, pantalla, tam_casilla):
+    """
+    Dibuja el tablero de juego en la pantalla.
+
+    Esta función itera sobre cada celda del tablero y llama a la función
+    `manejar_celda_juego_normal` para determinar la representación visual
+    apropiada para cada celda en función de su estado actual.
+
+    Parámetros:
+        - matriz: Matriz del juego que contiene los valores de las celdas.
+        - descubiertas: Matriz que indica las celdas descubiertas.
+        - banderas: Matriz que indica las celdas marcadas con una bandera.
+        - pantalla: Superficie sobre la que dibujar.
+        - tam_casilla: Tamaño de cada celda en píxeles.
+    """
+    
     imagenes = cargar_imagenes()
     filas, columnas = len(matriz), len(matriz[0])
     ancho_tablero = tam_casilla * columnas
@@ -285,11 +339,19 @@ def dibujar_tablero(matriz, descubiertas, banderas, pantalla, tam_casilla):
     for fila in range(filas):
         for columna in range(columnas):
             x = desplazamiento_x + columna * tam_casilla
-            # x = columna * tam_casilla + (ANCHO - columna * tam_casilla)//2 
             y = fila * tam_casilla + 200  # Ajustar para el área de puntaje
             manejar_celda_juego_normal(pantalla, fila, columna, x, y, tam_casilla, matriz, banderas, descubiertas, imagenes)
 
 def crear_matriz(filas, columnas, valor_inicial):
+    """
+    Crea una matriz (lista de listas) con las dimensiones especificadas.
+    Cada celda se inicializa con el valor proporcionado.
+
+    :param filas: Número de filas de la matriz
+    :param columnas: Número de columnas de la matriz
+    :param valor_inicial: Valor con el que se inicializarán todas las celdas de la matriz
+    :return: Matriz de tamaño filas x columnas con el valor inicial especificado
+    """
     matriz = []
     for _ in range(filas):
         fila = []
@@ -300,10 +362,26 @@ def crear_matriz(filas, columnas, valor_inicial):
                     
 def descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas):
     # Usamos una pila para simular la recursión de inundación.
+    """
+    Realiza la inundación de celdas vacías en el juego de Buscaminas.
+
+    La función utiliza una pila para simular la recursión de inundación.
+    Comienza con la celda pasada como parámetro y va agregando todas
+    las celdas adyacentes que no estén descubiertas. Si una celda es
+    vacía, se agregan todas sus celdas adyacentes no descubiertas. Si
+    una celda contiene una mina, se sale de la función sin agregar
+    celdas adyacentes.
+
+    :param fila: Fila de la celda a inundar.
+    :param columna: Columna de la celda a inundar.
+    :param matriz: Matriz del juego que contiene los valores de las celdas.
+    :param descubiertas: Matriz que indica las celdas descubiertas.
+    :param filas: Número de filas de la matriz.
+    :param columnas: Número de columnas de la matriz.
+    """
     celdas_por_descubrir = [(fila, columna)]
 
     while celdas_por_descubrir:
-        #f, c = celdas_por_descubrir.pop()
         celda = celdas_por_descubrir.pop()
         f = celda[0]
         c = celda[1] # Eliminar elemento en el indice especificado y lo retorna
@@ -322,24 +400,18 @@ def descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas):
                     if 0 <= i < filas and 0 <= j < columnas and not descubiertas[i][j]:
                         celdas_por_descubrir.append((i, j))
 
-# def ajustar_tamano_casilla(filas, columnas):
-#     pantalla_ancho, pantalla_alto = pantalla.get_size()  # Obtener tamaño de la pantalla
-#     # Ajustar el tamaño de las celdas para que el tablero entre en la pantalla
-#     espacio_ancho = pantalla_ancho - 100  # 100px de margen
-#     espacio_alto = pantalla_alto - 200  # 200px de margen (ajusta según sea necesario)
-
-#     tam_casilla_ancho = espacio_ancho // columnas
-#     tam_casilla_alto = espacio_alto // filas
-
-#     # Elegir el tamaño mínimo entre ancho y alto para que encaje correctamente
-#     tam_casilla = min(tam_casilla_ancho, tam_casilla_alto)
-
-#     # Asegurarse de que el tamaño de la celda no sea demasiado pequeño
-#     tam_casilla = max(tam_casilla, 30)
-
-#     return tam_casilla
 
 def ajustar_tamano_casilla(filas, columnas):
+    """
+    Ajusta el tamaño de las celdas del tablero de juego de acuerdo al tamaño de la pantalla y al número de filas y columnas.
+
+    La función calcula el tamaño óptimo de las celdas asegurando que el tablero encaje en la pantalla con márgenes 
+    predefinidos. Se garantiza un tamaño mínimo para las celdas para mantener la jugabilidad.
+
+    :param filas: Número de filas en el tablero.
+    :param columnas: Número de columnas en el tablero.
+    :return: Tamaño de las celdas en píxeles.
+    """
     pantalla_ancho, pantalla_alto = pantalla.get_size()  # Obtener tamaño de la pantalla
 
     # Definir márgenes
@@ -363,81 +435,6 @@ def ajustar_tamano_casilla(filas, columnas):
     return tam_casilla
 
 
-"""def iniciar_juego():
-    
-    Inicia un nuevo juego de Buscaminas.
-
-    Esta función reinicia las variables del juego y llama a la función `juego_principal()`.
-    
-    # Crear un diccionario para almacenar las variables del estado del juego
-    estado_juego = {
-        'matriz': [],
-        'descubiertas': [],
-        'banderas': [],
-        'puntaje': 0
-    }
-
-    # Reiniciar variables del juego
-    filas = seleccionar_nivel()[0]
-    columnas = seleccionar_nivel()[1]
-    num_minas = seleccionar_nivel()[2]
-    
-    estado_juego['matriz'] = crear_matriz_buscamina(filas, columnas, num_minas)  # Generar una nueva matriz con minas distribuidas aleatoriamente
-    estado_juego['descubiertas'] = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las casillas descubiertas
-    estado_juego['banderas'] = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las banderas
-    estado_juego['puntaje'] = 0  # Reiniciar el puntaje a 0000
-
-    juego_principal()  # Llamar a la función que maneja el bucle principal del juego
-
-    # Si necesitas acceder a las variables actualizadas después de llamar a juego_principal, puedes retornarlas
-    return estado_juego
-"""
-
-"""def menu_principal():
-    
-    Muestra el menú principal del juego y permite al jugador seleccionar opciones como iniciar un nuevo juego, ver el marcador o salir del juego.
-
-    Esta función inicializa las variables globales del juego e inicia el bucle del juego. Actualiza continuamente la pantalla con la imagen de fondo del juego y muestra el título del juego. También dibuja botones para iniciar un nuevo juego, ver el marcador y salir del juego. Además, dibuja un ícono para activar o desactivar el sonido del juego.
-
-    Parameters:
-    None
-
-    Returns:
-    None
-    
-
-    # Reproducir música de fondo
-    sonido_fondo.play(loops=-1)
-
-    ejecutando = True
-    silencio = False
-    while ejecutando:  # Bucle principal del juego 
-        pantalla.blit(imagen_fondo, (0, 0))  # Dibujar imagen de fondo
-        dibujar_texto(pantalla, "BUSCAMINAS", 48, POSICION_TITULO[0], POSICION_TITULO[1])
-
-        # Dibujar botones
-
-        dibujar_boton("Jugar", ANCHO / 2 - ANCHO_BOTON / 2, INICIO_BOTON_Y, ANCHO_BOTON, ALTO_BOTON, NEGRO, (200, 200, 200), iniciar_juego)
-        dibujar_boton("Ver Puntajes", ANCHO / 2 - ANCHO_BOTON / 2, INICIO_BOTON_Y + ESPACIADO_BOTON, ANCHO_BOTON, ALTO_BOTON, NEGRO, (200, 200, 200))
-        dibujar_boton("Salir", ANCHO / 2 - ANCHO_BOTON / 2, INICIO_BOTON_Y + 2 * ESPACIADO_BOTON, ANCHO_BOTON, ALTO_BOTON, NEGRO, (200, 200, 200), salir)
-
-        # Dibujar ícono de sonido
-        if silencio:  # Si el sonido esta silenciado, mostrar el ícono de sonido apagado
-            pantalla.blit(pygame.transform.scale(icono_sonido_apagado, (tamano_icono, tamano_icono)), posicion_icono)
-        else:  # Si el sonido no esta silenciado, mostrar el ícono de sonido encendido
-            pantalla.blit(pygame.transform.scale(icono_sonido_encendido, (tamano_icono, tamano_icono)), posicion_icono)
-            
-
-        pygame.display.flip()
-
-        for event in pygame.event.get(): # Manejo de eventos del juego (Click, teclado, etc.)
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()  # Salir del programa cuando se cierra la ventana
-            elif event.type == pygame.MOUSEBUTTONDOWN: # Manejo de eventos de click del ratón (Click, teclado, etc.)
-                if posicion_icono[0] < event.pos[0] < posicion_icono[0] + tamano_icono and posicion_icono[1] < event.pos[1] < posicion_icono[1] + tamano_icono: # Verificar si el click se encuentra dentro del ícono de sonido (activado o desactivado) y cambiar el estado del silencio a su opuesto 
-                    silencio = alternar_sonido(silencio, sonido_fondo)  # Alternar sonido cuando se hace clic en el ícono de sonido
- """                   
 
 def manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, descubiertas, puntaje, SONIDO_FIN_JUEGO, SONIDO_CELDA_DESCUBIERTA):
     """
@@ -474,11 +471,18 @@ def manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, desc
                     # --------------------------------------------
                     print("¡Boom! Has encontrado una mina. Has perdido la partida.")
                     resultado["fin_juego"] = True
+                    
                 else:
                     if not descubiertas[fila][columna]:
                         SONIDO_CELDA_DESCUBIERTA.play()
                         resultado["puntaje"] += 1
                     descubrir_vacias(fila, columna, matriz, descubiertas, filas, columnas)
+    if resultado["fin_juego"]:
+        nick = pedir_nick()
+        guardar_puntaje(nick, puntaje)
+        pantalla.blit(imagen_fondo, (0, 0))  # Fondo para mostrar la matriz final
+        pygame.display.flip()
+    
     return resultado
                                  
 def boton_presionado(nombre_boton, posicion_clic):
@@ -503,7 +507,7 @@ def boton_presionado(nombre_boton, posicion_clic):
         x = ANCHO / 2 - ANCHO_BOTON / 2
         y = INICIO_BOTON_Y + 2 * ESPACIADO_BOTON
     else:
-        return presionado  # Si el botón no existe, regresamos el valor actual de presionado (que es False)
+        presionado = False  # Si el botón no existe, regresamos el valor actual de presionado (que es False)
 
     # Dimensiones del botón
     ancho = ANCHO_BOTON
@@ -519,69 +523,18 @@ def boton_presionado(nombre_boton, posicion_clic):
     # Retornar el valor final de 'presionado'
     return presionado
                     
-"""def juego_principal():
-    
-    Inicia una nueva partida del Buscaminas y maneja el bucle principal del juego.
-    
-    SONIDO_CELDA_DESCUBIERTA = pygame.mixer.Sound("coin_mario-[AudioTrimmer.com].mp3")
-    SONIDO_FIN_JUEGO = pygame.mixer.Sound("game_over.mp3")
-
-    # Seleccionar nivel y configurar variables del juego
-    filas, columnas, num_minas = seleccionar_nivel()
-    matriz = crear_matriz_buscamina(filas, columnas, num_minas)
-    descubiertas = crear_matriz(filas, columnas, False)
-    banderas = crear_matriz(filas, columnas, False)
-    puntaje = 0
-    fin_juego = False
-    tam_casilla = ajustar_tamano_casilla(filas, columnas)
-    evento_contador = pygame.USEREVENT + 1
-    un_segundo = 1000  # Milisegundos
-    pygame.time.set_timer(evento_contador, un_segundo)
-    contador_segundos = 0
-    contador_texto = fuente.render(f"Time: {contador_segundos}", True, "red")
-
-    # Bucle principal del juego
-    while not fin_juego:
-        pantalla.blit(imagen_fondo, (0, 0))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pos = event.pos
-                x, y = pos
-                columna = x // tam_casilla
-                fila = (y - 100) // tam_casilla
-
-                if 0 <= fila < filas and 0 <= columna < columnas:
-                    if event.button == 1:  # Clic izquierdo
-                        resultado = manejar_evento(fila, columna, filas, columnas, event, matriz, banderas, descubiertas, puntaje, SONIDO_FIN_JUEGO, SONIDO_CELDA_DESCUBIERTA)
-                        puntaje = resultado["puntaje"]
-                        fin_juego = resultado["fin_juego"]
-                    elif event.button == 3:  # Clic derecho
-                        banderas[fila][columna] = not banderas[fila][columna]
-
-            if event.type == evento_contador:
-                contador_segundos += 1
-                contador_texto = fuente.render(f"Time: {contador_segundos}", True, "red")
-
-        # Dibujar el tablero y los indicadores
-        dibujar_tablero(matriz, descubiertas, banderas, pantalla, tam_casilla)
-        texto_puntaje = fuente.render(f"Puntaje: {puntaje:04d}", True, COLOR_TEXTO)
-        pantalla.blit(texto_puntaje, (20, 20))
-        pantalla.blit(contador_texto, (700, 20))
-
-        pygame.display.flip()
-
-    # Mensaje de fin de partida
-    pygame.time.wait(5000)"""
-    
-def salir():
-    pygame.quit()
-    sys.exit()
 
 def reiniciar(filas, columnas, num_minas):
+    """
+    Reinicia las variables del juego para empezar una nueva partida con los mismos parámetros.
+
+    :param filas: Número de filas del tablero
+    :param columnas: Número de columnas del tablero
+    :param num_minas: Número de minas en el tablero
+    :return: Tupla con la matriz, el estado de las casillas descubiertas, el estado de las banderas, el puntaje y el contador de segundos
+    """
+    
+
     matriz = crear_matriz_buscamina(filas, columnas, num_minas) # Reiniciar la matriz
     descubiertas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las casillas descubiertas
     banderas = crear_matriz(filas, columnas, False)  # Reiniciar el estado de las banderas
@@ -590,6 +543,18 @@ def reiniciar(filas, columnas, num_minas):
     return matriz, descubiertas, banderas, puntaje, contador_segundos
 
 def guardar_puntaje(nick, puntaje, archivo="puntajes.json"):
+    """
+    Guarda un nuevo puntaje en un archivo JSON.
+
+    Si el archivo ya existe, lee los puntajes existentes y agrega el nuevo puntaje.
+    Si el archivo no existe, lo crea y guarda el nuevo puntaje.
+
+    Args:
+        nick (str): El apodo del jugador que ha obtenido el puntaje.
+        puntaje (int): La puntuación obtenida por el jugador.
+        archivo (str): Ruta del archivo JSON donde se guardan los puntajes. 
+                       Por defecto es "puntajes.json".
+    """
     datos = []
 
     # Verificar si el archivo existe abriéndolo directamente
@@ -614,6 +579,18 @@ def guardar_puntaje(nick, puntaje, archivo="puntajes.json"):
 
 # Pantalla para pedir el nombre (nick)
 def pedir_nick():
+    """
+    Pide al usuario que ingrese un nick (nombre de usuario) para el juego.
+
+    Muestra una pantalla con un texto que indica que debe ingresar su nick,
+    y un rectángulo donde se va a dibujar el texto del nick.
+
+    El usuario puede ingresar caracteres con el teclado, y borrarlos con
+    la tecla Backspace. Para confirmar el nick, debe presionar Enter.
+
+    La función devuelve el nick ingresado por el usuario.
+
+    """
     nick = ""
     ingresando = True
     while ingresando:
@@ -646,6 +623,7 @@ def pedir_nick():
         # Dibujar el texto encima del rectángulo
         pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 3))
         pantalla.blit(texto_nick, (ANCHO // 2 - texto_nick.get_width() // 2, ALTO // 2))
+
 
         pygame.display.flip()
 
@@ -748,15 +726,15 @@ def cargar_puntajes(archivo_puntajes):
     Returns:
         list: Lista de diccionarios que representan las puntuaciones más altas.
     """
-    # Paso 1: Leer el archivo usando leer_archivo
+    # Leer el archivo usando leer_archivo
     datos = leer_archivo(archivo_puntajes)
     
-    # Paso 2: Validar si el archivo fue leído correctamente
+    # Validar si el archivo fue leído correctamente
     if datos is None:
         print(f"Advertencia: El archivo '{archivo_puntajes}' no pudo ser leído.")
         return []
     
-    # Paso 3: Validar el tipo de los datos cargados
+    # Validar el tipo de los datos cargados
     if isinstance(datos, dict):
         # Si es un diccionario, busca la clave "puntajes"
         return datos.get("puntajes", [])
@@ -764,7 +742,7 @@ def cargar_puntajes(archivo_puntajes):
         # Si ya es una lista, retorna directamente
         return datos
     
-    # Paso 4: Caso de formato inesperado
+    # Caso de formato inesperado
     print(f"Advertencia: El archivo '{archivo_puntajes}' tiene un formato inesperado.")
     return []
 
@@ -808,15 +786,30 @@ def mostrar_ranking(pantalla, archivo_puntajes, imagen_fondo, ancho, alto):
                 pos_raton = pygame.mouse.get_pos()
                 if 50 < pos_raton[0] < 170 and 50 < pos_raton[1] < 100:
                     return "menu_principal"
+        
+def volver_menu_principal():
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos_raton = pygame.mouse.get_pos()
+            if 50 < pos_raton[0] < 170 and 65 < pos_raton[1] < 100:
+                return "menu_principal"
 
 def verificar_victoria(matriz, banderas):
+    """
+    Verifica si el usuario ha ganado el juego, es decir, ha marcado todas las minas con banderas y no ha marcado otras celdas.
+
+    :param matriz: Matriz del juego.
+    :param banderas: Matriz que indica si hay una bandera en una celda.
+    :return: True si el usuario ha ganado, False en caso contrario.
+    """
+    resultado = True
     for fila in range(len(matriz)):
         for columna in range(len(matriz[0])):
             if matriz[fila][columna] == -1:  # Es una mina
                 if not banderas[fila][columna]:  # Falta una bandera
-                    return False
+                    resultado = False
             elif banderas[fila][columna]:  # Bandera mal colocada
-                return False
-    return True
+                resultado = False
+    return resultado
 
 

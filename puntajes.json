@@ -1,171 +1,23 @@
 [
     {
-        "nick": "juan",
-        "puntaje": 0
-    },
-    {
-        "nick": "juan",
-        "puntaje": 3
-    },
-    {
-        "nick": "juan",
-        "puntaje": 1
-    },
-    {
-        "nick": "juaam",
-        "puntaje": 0
-    },
-    {
-        "nick": "juan",
-        "puntaje": 3
-    },
-    {
-        "nick": "juaaa",
-        "puntaje": 3
-    },
-    {
-        "nick": "d",
-        "puntaje": 3
-    },
-    {
-        "nick": "ad",
-        "puntaje": 3
-    },
-    {
-        "nick": "Juan",
-        "puntaje": 0
-    },
-    {
-        "nick": "Juan",
-        "puntaje": 0
-    },
-    {
-        "nick": "juan",
-        "puntaje": 2
-    },
-    {
-        "nick": "juan",
-        "puntaje": 2
-    },
-    {
-        "nick": "jnujand",
-        "puntaje": 2
-    },
-    {
-        "nick": "ad",
-        "puntaje": 2
-    },
-    {
-        "nick": "juan",
-        "puntaje": 3
-    },
-    {
-        "nick": "juan",
-        "puntaje": 3
-    },
-    {
-        "nick": "juan",
-        "puntaje": 1
-    },
-    {
-        "nick": "jua",
-        "puntaje": 0
-    },
-    {
-        "nick": "juansito",
-        "puntaje": 2
-    },
-    {
-        "nick": "kaaka",
-        "puntaje": 2
-    },
-    {
-        "nick": "kaaka",
-        "puntaje": 2
-    },
-    {
-        "nick": "kkk",
-        "puntaje": 1
-    },
-    {
         "nick": "pablo",
         "puntaje": 7
     },
     {
         "nick": "pablo",
         "puntaje": 7
-    },
-    {
-        "nick": "kkkk",
-        "puntaje": 0
-    },
-    {
-        "nick": "kkkk",
-        "puntaje": 0
-    },
-    {
-        "nick": "lautaro",
-        "puntaje": 3
-    },
-    {
-        "nick": "pepo",
-        "puntaje": 3
-    },
-    {
-        "nick": "nico",
-        "puntaje": 3
-    },
-    {
-        "nick": "kaka",
-        "puntaje": 1
-    },
-    {
-        "nick": "kaka",
-        "puntaje": 1
-    },
-    {
-        "nick": "pepe",
-        "puntaje": 2
     },
     {
         "nick": "norma",
         "puntaje": 6
     },
     {
-        "nick": "lolo",
-        "puntaje": 0
-    },
-    {
         "nick": "more",
         "puntaje": 7
     },
     {
-        "nick": "kkkkkk",
-        "puntaje": 2
-    },
-    {
-        "nick": "popo",
-        "puntaje": 1
-    },
-    {
-        "nick": "lala",
-        "puntaje": 2
-    },
-    {
-        "nick": "ppppp",
-        "puntaje": 2
-    },
-    {
-        "nick": "ooooo",
-        "puntaje": 4
-    },
-    {
         "nick": "top",
         "puntaje": 7
-    },
-    {
-        "nick": "\u00f1\u00f1\u00f1",
-        "puntaje": 0
     },
     {
         "nick": "elmejor",
@@ -176,10 +28,6 @@
         "puntaje": 17
     },
     {
-        "nick": "\u00bf\u00bf\u00bf\u00bf",
-        "puntaje": 1
-    },
-    {
         "nick": "pepe",
         "puntaje": 4
     },
@@ -188,23 +36,19 @@
         "puntaje": 11
     },
     {
-        "nick": "keke",
-        "puntaje": 3
+        "nick": "''''",
+        "puntaje": 5
     },
     {
-        "nick": "pepe",
-        "puntaje": 2
+        "nick": "lll",
+        "puntaje": 5
     },
     {
-        "nick": "\u00f1\u00f1\u00f1",
+        "nick": "juan",
+        "puntaje": 5
+    },
+    {
+        "nick": "dadsa",
         "puntaje": 1
-    },
-    {
-        "nick": "",
-        "puntaje": 0
-    },
-    {
-        "nick": "pppp",
-        "puntaje": 0
     }
 ]
